@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OrthoChart · Consulta de Rodilla</title>
+<style>
+  :root{
+    --ink:#1a2230; --ink-soft:#5a6678; --line:#dce1e8; --surface:#ffffff; --bg:#eef1f5;
+    --accent:#0f9b8e; --accent-dark:#0b7a6f;
+    --normal:#eef4f3; --normal-on:#0f9b8e; --abn-bg:#fbeeec; --abn:#c0492f;
+    --radius:10px;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    --ui:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--ui);color:var(--ink);background:var(--bg);line-height:1.45;-webkit-font-smoothing:antialiased;padding-bottom:96px}
+  header{background:var(--ink);color:#fff;padding:14px 20px;display:flex;align-items:baseline;gap:12px;position:sticky;top:0;z-index:20}
+  header h1{font-size:17px;margin:0;font-weight:600;letter-spacing:.2px}
+  header .sub{font-size:12.5px;color:#9fb0c4}
+  .wrap{max-width:760px;margin:0 auto;padding:18px 16px}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 16px 18px;margin-bottom:14px}
+  .card > h2{font-size:11px;text-transform:uppercase;letter-spacing:.10em;color:var(--ink-soft);margin:0 0 14px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .card > h2::before{content:"";width:14px;height:2px;background:var(--accent);border-radius:2px}
+  .card > h2 .opt{font-weight:500;letter-spacing:0;text-transform:none;color:#9aa6b5;font-size:11px}
+
+  label.fld{display:block;margin-bottom:12px}
+  label.fld > span{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:5px;font-weight:500}
+  input[type=text],input[type=number],input[type=email],input[type=tel],textarea,select{
+    width:100%;font-family:var(--ui);font-size:14.5px;color:var(--ink);padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fbfcfd}
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+  textarea{resize:vertical;min-height:56px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px}
+
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-family:var(--ui);font-size:13.5px;padding:7px 13px;border-radius:20px;cursor:pointer;border:1px solid var(--line);background:#fbfcfd;color:var(--ink-soft);user-select:none;transition:all .12s ease}
+  .chip:hover{border-color:#b9c2cf}
+  .chip.selected{background:var(--normal);border-color:var(--normal-on);color:var(--accent-dark);font-weight:600}
+  .chip.selected[data-flag="abn"]{background:var(--abn-bg);border-color:var(--abn);color:var(--abn)}
+  .chip.selected[data-flag="na"]{background:#eef0f3;border-color:#9aa6b5;color:#5a6678}
+
+  .field-row{margin-bottom:13px}
+  .field-row > .lbl{font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;font-weight:500}
+
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{font-family:var(--ui);font-size:13.5px;padding:8px 16px;border:0;background:#fbfcfd;color:var(--ink-soft);cursor:pointer;border-right:1px solid var(--line)}
+  .seg button:last-child{border-right:0}
+  .seg button.on{background:var(--accent);color:#fff;font-weight:600}
+
+  .hidden{display:none}
+
+  .banner{background:#eef6f5;border:1px dashed var(--accent);color:var(--accent-dark);font-size:12.5px;padding:10px 12px;border-radius:8px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .banner button{font-family:var(--ui);font-size:12.5px;padding:5px 11px;border-radius:7px;border:1px solid #b9c2cf;background:#fff;color:#9aa6b5;cursor:not-allowed}
+
+  /* EQ-5D-5L vertical, full-text options */
+  .eq-dim{margin-bottom:18px}
+  .eq-q{font-size:13.5px;color:var(--ink);font-weight:600;margin-bottom:8px}
+  .eq-q small{display:block;font-weight:400;color:var(--ink-soft);font-size:12px;margin-top:2px}
+  .eq-opt{display:flex;gap:10px;align-items:center;padding:9px 11px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer;font-size:13.5px;background:#fbfcfd}
+  .eq-opt:hover{border-color:#b9c2cf}
+  .eq-opt .num{flex:0 0 22px;height:22px;border-radius:50%;background:#e7ebf0;color:var(--ink-soft);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
+  .eq-opt.on{background:var(--normal);border-color:var(--accent)}
+  .eq-opt.on .num{background:var(--accent);color:#fff}
+  .vas-intro{font-size:12.5px;color:var(--ink-soft);margin:4px 0 8px;line-height:1.5}
+  .vas-row{display:flex;align-items:center;gap:12px}
+  .vas-row input[type=range]{flex:1;accent-color:var(--accent)}
+  .vas-val{font-family:var(--mono);font-weight:700;min-width:54px;text-align:right}
+  .eq-foot{font-size:11px;color:#9aa6b5;margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+
+  .actionbar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:12px 16px;display:flex;gap:10px;justify-content:flex-end;align-items:center;z-index:20;box-shadow:0 -2px 12px rgba(20,30,45,.06)}
+  .actionbar .status{margin-right:auto;font-size:13px;color:var(--ink-soft)}
+  .btn{font-family:var(--ui);font-size:14.5px;font-weight:600;padding:11px 20px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+  .btn:hover{border-color:#b9c2cf}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
+
+  .note-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .note-head h2{margin:0}
+  #notaTxt{width:100%;font-family:var(--mono);font-size:13px;line-height:1.55;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:14px;background:#fbfcfd;min-height:320px}
+  .copied{color:var(--accent-dark);font-weight:600;font-size:13px}
+  .config-warn{background:#fffaf0;border:1px solid #f0e0b8;color:#7a5d12;font-size:12.5px;padding:9px 12px;border-radius:8px;margin-top:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1>OrthoChart</h1>
+  <span class="sub">Consulta de rodilla · Traumatología</span>
+</header>
+
+<div class="wrap">
+
+  <!-- CONSULTA -->
+  <div class="card">
+    <h2>Consulta</h2>
+    <div class="field-row">
+      <div class="lbl">Tipo de consulta</div>
+      <div class="seg" id="segTipo">
+        <button type="button" data-val="Ingreso" class="on">Ingreso</button>
+        <button type="button" data-val="Control">Control</button>
+      </div>
+    </div>
+    <label class="fld" style="max-width:200px"><span>Fecha</span><input type="text" id="fecha"></label>
+  </div>
+
+  <!-- PACIENTE -->
+  <div class="card">
+    <h2>Paciente</h2>
+    <div class="banner banner-control hidden">
+      Control: los datos del paciente se recuperarán de la base de datos.
+      <button type="button" disabled>Recuperar por RUT (próximamente)</button>
+    </div>
+    <label class="fld"><span>RUT</span><input type="text" id="rut" placeholder="12.345.678-9"></label>
+    <label class="fld"><span>Nombre</span><input type="text" id="nombre"></label>
+    <div class="grid">
+      <label class="fld"><span>Edad</span><input type="number" id="edad" min="0" max="120"></label>
+      <div class="field-row">
+        <div class="lbl">Sexo</div>
+        <div class="chips" data-field="sexo">
+          <div class="chip" data-value="Masculino">Masculino</div>
+          <div class="chip" data-value="Femenino">Femenino</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-3">
+      <label class="fld"><span>Previsión</span><input type="text" id="prevision" placeholder="Fonasa / Isapre"></label>
+      <label class="fld"><span>Teléfono</span><input type="tel" id="telefono"></label>
+      <label class="fld"><span>Email</span><input type="email" id="email"></label>
+    </div>
+  </div>
+
+  <!-- ANTECEDENTES -->
+  <div class="card">
+    <h2>Antecedentes</h2>
+    <div class="banner banner-control hidden">
+      Control: los antecedentes se recuperarán de la base de datos.
+      <button type="button" disabled>Recuperar de base de datos (próximamente)</button>
+    </div>
+    <label class="fld"><span>Antecedentes médicos</span><textarea id="antecedentes" placeholder="HTA, DM2, cirugías previas..."></textarea></label>
+
+    <div class="field-row">
+      <div class="lbl">Alergias</div>
+      <div class="chips" data-field="alergiaSiNo">
+        <div class="chip" data-value="No">No</div>
+        <div class="chip" data-flag="abn" data-value="Sí">Sí</div>
+      </div>
+    </div>
+    <div id="alergiaDetalle" class="hidden">
+      <div class="grid">
+        <label class="fld"><span>Medicamento / sustancia</span><input type="text" id="alergiaMed"></label>
+        <label class="fld"><span>Reacción</span><input type="text" id="alergiaReac" placeholder="Urticaria, anafilaxia..."></label>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="lbl">Tabaquismo</div>
+      <div class="chips" data-field="tabaquismo">
+        <div class="chip" data-value="No">No</div>
+        <div class="chip" data-value="Ex-fumador">Ex-fumador</div>
+        <div class="chip" data-flag="abn" data-value="Activo">Activo</div>
+      </div>
+    </div>
+    <div class="grid">
+      <label class="fld"><span>Actividad deportiva</span><input type="text" id="deporte"></label>
+      <label class="fld"><span>Ocupación</span><input type="text" id="ocupacion"></label>
+    </div>
+  </div>
+
+  <!-- TAMIZAJE ONCOLÓGICO (mujeres ≥40) -->
+  <div class="card hidden" id="cardTamizaje">
+    <h2>Tamizaje oncológico <span class="opt">· mujeres ≥ 40 años</span></h2>
+    <div class="field-row">
+      <div class="lbl">Mamografía</div>
+      <div class="chips" data-field="mamografia">
+        <div class="chip" data-value="Vigente">Vigente</div>
+        <div class="chip" data-flag="abn" data-value="No vigente">No vigente</div>
+        <div class="chip" data-flag="abn" data-value="No realizada">No realizada</div>
+      </div>
+    </div>
+    <label class="fld"><span>Mamografía — última / detalle</span><input type="text" id="mamoDetalle" placeholder="Fecha o resultado"></label>
+    <div class="field-row">
+      <div class="lbl">PAP</div>
+      <div class="chips" data-field="pap">
+        <div class="chip" data-value="Vigente">Vigente</div>
+        <div class="chip" data-flag="abn" data-value="No vigente">No vigente</div>
+        <div class="chip" data-flag="abn" data-value="No realizado">No realizado</div>
+      </div>
+    </div>
+    <label class="fld" style="margin-bottom:0"><span>PAP — último / detalle</span><input type="text" id="papDetalle" placeholder="Fecha o resultado"></label>
+  </div>
+
+  <!-- MOTIVO -->
+  <div class="card">
+    <h2>Motivo de consulta</h2>
+    <div class="field-row">
+      <div class="lbl">Lateralidad</div>
+      <div class="chips" data-field="lado">
+        <div class="chip" data-value="rodilla derecha">Derecha</div>
+        <div class="chip" data-value="rodilla izquierda">Izquierda</div>
+        <div class="chip" data-value="ambas rodillas">Bilateral</div>
+      </div>
+    </div>
+    <div class="grid">
+      <label class="fld"><span>Tiempo de evolución</span><input type="text" id="evolucion" placeholder="3 meses"></label>
+    </div>
+    <label class="fld"><span>Historia breve</span><textarea id="motivo" placeholder="Gonalgia, mecanismo, síntomas asociados..."></textarea></label>
+  </div>
+
+  <!-- EXAMEN FÍSICO -->
+  <div class="card">
+    <h2>Examen físico</h2>
+    <div class="field-row">
+      <div class="lbl">Lado examinado</div>
+      <div class="chips" data-field="ladoExam">
+        <div class="chip" data-value="Rodilla derecha">Derecha</div>
+        <div class="chip" data-value="Rodilla izquierda">Izquierda</div>
+        <div class="chip" data-value="Ambas rodillas">Bilateral</div>
+      </div>
+    </div>
+    <div class="grid">
+      <label class="fld"><span>Flexión (°)</span><input type="number" id="flexion" placeholder="130"></label>
+      <label class="fld"><span>Extensión (°)</span><input type="number" id="extension" placeholder="0"></label>
+    </div>
+    <div class="field-row">
+      <div class="lbl">Derrame articular</div>
+      <div class="chips" data-field="derrame">
+        <div class="chip" data-value="No">No</div>
+        <div class="chip" data-flag="abn" data-value="Leve">Leve</div>
+        <div class="chip" data-flag="abn" data-value="Moderado">Moderado</div>
+        <div class="chip" data-flag="abn" data-value="Severo">Severo</div>
+        <div class="chip" data-flag="na" data-value="No evaluado">No evaluado</div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="lbl">ROM de cadera</div>
+      <div class="chips" data-field="romCadera">
+        <div class="chip" data-value="Normal">Normal</div>
+        <div class="chip" data-flag="abn" data-value="Disminución RI">Disminución RI</div>
+        <div class="chip" data-flag="abn" data-value="Disminución RE">Disminución RE</div>
+        <div class="chip" data-flag="na" data-value="No evaluado">No evaluado</div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="lbl">Dolor al cepillo (rótula)</div>
+      <div class="chips" data-field="cepillo">
+        <div class="chip" data-value="Negativo">Negativo</div>
+        <div class="chip" data-flag="abn" data-value="Positivo">Positivo</div>
+        <div class="chip" data-flag="na" data-value="No evaluado">No evaluado</div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="lbl">Estrés varo/valgo</div>
+      <div class="chips" data-field="estres">
+        <div class="chip" data-value="Estable">Estable</div>
+        <div class="chip" data-flag="abn" data-value="Laxitud medial">Laxitud medial</div>
+        <div class="chip" data-flag="abn" data-value="Laxitud lateral">Laxitud lateral</div>
+        <div class="chip" data-flag="na" data-value="No evaluado">No evaluado</div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="lbl">Lachman</div>
+      <div class="chips" data-field="lachman">
+        <div class="chip" data-value="Negativo">Negativo</div>
+        <div class="chip" data-flag="abn" data-value="Positivo">Positivo</div>
+        <div class="chip" data-flag="na" data-value="No evaluado">No evaluado</div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="lbl">McMurray</div>
+      <div class="chips" data-field="mcmurray">
+        <div class="chip" data-value="Negativo">Negativo</div>
+        <div class="chip" data-flag="abn" data-value="Positivo medial">Positivo medial</div>
+        <div class="chip" data-flag="abn" data-value="Positivo lateral">Positivo lateral</div>
+        <div class="chip" data-flag="na" data-value="No evaluado">No evaluado</div>
+      </div>
+    </div>
+    <label class="fld" style="margin-top:6px"><span>Otros hallazgos</span><textarea id="examenOtros" placeholder="Marcha, atrofia de cuádriceps, dolor a la palpación..."></textarea></label>
+  </div>
+
+  <!-- DIAGNÓSTICO -->
+  <div class="card">
+    <h2>Diagnóstico</h2>
+    <div class="field-row">
+      <div class="lbl">Diagnóstico más frecuente</div>
+      <div class="chips" data-field="dx">
+        <div class="chip" data-value="Gonartrosis">Gonartrosis</div>
+        <div class="chip" data-value="Lesión meniscal medial">Lesión meniscal medial</div>
+        <div class="chip" data-value="Lesión meniscal lateral">Lesión meniscal lateral</div>
+        <div class="chip" data-value="Rotura LCA">Rotura LCA</div>
+        <div class="chip" data-value="Rotura LCP">Rotura LCP</div>
+        <div class="chip" data-value="Condromalacia rotuliana">Condromalacia rotuliana</div>
+        <div class="chip" data-value="Síndrome patelofemoral">Síndrome patelofemoral</div>
+        <div class="chip" data-value="Inestabilidad rotuliana">Inestabilidad rotuliana</div>
+        <div class="chip" data-value="Tendinopatía rotuliana">Tendinopatía rotuliana</div>
+        <div class="chip" data-value="Otro">Otro (especificar)</div>
+      </div>
+    </div>
+    <div id="dxOtroBox" class="hidden">
+      <label class="fld" style="margin-bottom:0"><span>Especificar diagnóstico</span><input type="text" id="dxOtro"></label>
+    </div>
+  </div>
+
+  <!-- EQ-5D-5L -->
+  <div class="card">
+    <h2>Calidad de vida · EQ-5D-5L</h2>
+    <p class="vas-intro" style="margin-top:0">Indique cuál de las siguientes afirmaciones describe mejor su salud HOY.</p>
+    <div id="eqDims"></div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="eq-q">EVA — Su salud HOY</div>
+      <p class="vas-intro">Esta escala va de 0 a 100. El 100 representa la mejor salud que usted se pueda imaginar y el 0 representa la peor salud que usted se pueda imaginar. Indique cómo es su salud HOY.</p>
+      <div class="vas-row">
+        <input type="range" id="eqVas" min="0" max="100" value="50">
+        <span class="vas-val" id="eqVasVal">50 / 100</span>
+      </div>
+    </div>
+    <div class="eq-foot">EQ-5D-5L © EuroQol Research Foundation. Para uso clínico formal o de investigación, verifique su licencia en euroqol.org.</div>
+  </div>
+
+  <!-- PLAN -->
+  <div class="card">
+    <h2>Plan</h2>
+    <div class="field-row">
+      <div class="lbl">Educación al paciente</div>
+      <div class="chips" data-field="educacion">
+        <div class="chip" data-value="Sí">Sí</div>
+        <div class="chip" data-value="No">No</div>
+      </div>
+    </div>
+    <label class="fld"><span>Medicamentos</span><input type="text" id="medicamentos"></label>
+    <label class="fld"><span>Exámenes / imágenes</span><input type="text" id="examenes"></label>
+    <div class="grid">
+      <label class="fld"><span>Fisioterapia / kinesioterapia</span><input type="text" id="kinesio"></label>
+      <label class="fld"><span>Próximo control</span><input type="text" id="control" placeholder="3 semanas"></label>
+    </div>
+    <label class="fld"><span>Cirugía / conducta</span><input type="text" id="cirugia"></label>
+    <label class="fld" style="margin-bottom:0"><span>Otras indicaciones</span><textarea id="otras"></textarea></label>
+  </div>
+
+  <!-- SALIDA -->
+  <div class="card hidden" id="salida">
+    <div class="note-head">
+      <h2>Nota para el sistema hospitalario</h2>
+      <span class="copied hidden" id="copiadoMsg">Copiado ✓</span>
+    </div>
+    <textarea id="notaTxt" readonly></textarea>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <button class="btn btn-primary" id="btnCopiar">Copiar nota</button>
+      <button class="btn" id="btnSubir">Subir a base de datos</button>
+    </div>
+    <div class="config-warn hidden" id="configWarn">
+      La base de datos aún no está configurada — eso lo dejamos para el siguiente paso.
+      Por ahora la nota se genera y puedes copiarla normalmente.
+    </div>
+  </div>
+
+</div>
+
+<div class="actionbar">
+  <span class="status" id="status"></span>
+  <button class="btn" id="btnLimpiar">Limpiar</button>
+  <button class="btn btn-primary" id="btnGenerar">Generar nota</button>
+</div>
+
+<script>
+const SHEET_URL = "";            /* lo configuramos en el siguiente paso (Google Sheets) */
+const SUBIR_IDENTIFICABLE = true;
+
+const state = { tipo:"Ingreso", chips:{}, eq:{} };
+
+/* fecha de hoy */
+(function(){const d=new Date(),p=n=>String(n).padStart(2,"0");
+  document.getElementById("fecha").value=`${p(d.getDate())}-${p(d.getMonth()+1)}-${d.getFullYear()}`;})();
+
+/* tipo de consulta + banners de control */
+function actualizarTipo(){
+  const isControl=state.tipo==="Control";
+  document.querySelectorAll(".banner-control").forEach(b=>b.classList.toggle("hidden",!isControl));
+}
+document.querySelectorAll("#segTipo button").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll("#segTipo button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on"); state.tipo=b.dataset.val; actualizarTipo();
+  });
+});
+
+/* chips */
+document.querySelectorAll(".chips").forEach(group=>{
+  const field=group.dataset.field;
+  group.querySelectorAll(".chip").forEach(chip=>{
+    chip.addEventListener("click",()=>{
+      const was=chip.classList.contains("selected");
+      group.querySelectorAll(".chip").forEach(c=>c.classList.remove("selected"));
+      state.chips[field] = was ? null : chip.dataset.value;
+      if(!was) chip.classList.add("selected");
+      if(field==="sexo") actualizarTamizaje();
+      if(field==="alergiaSiNo") document.getElementById("alergiaDetalle").classList.toggle("hidden",state.chips[field]!=="Sí");
+      if(field==="dx") document.getElementById("dxOtroBox").classList.toggle("hidden",state.chips[field]!=="Otro");
+    });
+  });
+});
+
+/* tamizaje visible solo para mujeres >=40 */
+function actualizarTamizaje(){
+  const edad=parseInt(document.getElementById("edad").value||"0",10);
+  document.getElementById("cardTamizaje").classList.toggle("hidden",!(state.chips.sexo==="Femenino"&&edad>=40));
+}
+document.getElementById("edad").addEventListener("input",actualizarTamizaje);
+
+/* EQ-5D-5L — texto completo para leer al paciente */
+const EQ_DIMS=[
+  {key:"movilidad",label:"Movilidad",q:"Movilidad",levels:[
+    "No tengo problemas para caminar","Tengo problemas leves para caminar",
+    "Tengo problemas moderados para caminar","Tengo problemas graves para caminar","No puedo caminar"]},
+  {key:"autocuidado",label:"Autocuidado",q:"Cuidado personal",levels:[
+    "No tengo problemas para lavarme o vestirme","Tengo problemas leves para lavarme o vestirme",
+    "Tengo problemas moderados para lavarme o vestirme","Tengo problemas graves para lavarme o vestirme","No puedo lavarme o vestirme"]},
+  {key:"actividades",label:"Act. cotidianas",q:"Actividades cotidianas",sub:"(p. ej. trabajar, estudiar, tareas domésticas, actividades familiares o de tiempo libre)",levels:[
+    "No tengo problemas para realizar mis actividades cotidianas","Tengo problemas leves para realizar mis actividades cotidianas",
+    "Tengo problemas moderados para realizar mis actividades cotidianas","Tengo problemas graves para realizar mis actividades cotidianas","No puedo realizar mis actividades cotidianas"]},
+  {key:"dolor",label:"Dolor/malestar",q:"Dolor o malestar",levels:[
+    "No tengo dolor ni malestar","Tengo dolor o malestar leve",
+    "Tengo dolor o malestar moderado","Tengo dolor o malestar fuerte","Tengo dolor o malestar extremo"]},
+  {key:"ansiedad",label:"Ansiedad/depresión",q:"Ansiedad o depresión",levels:[
+    "No estoy ansioso ni deprimido","Estoy levemente ansioso o deprimido",
+    "Estoy moderadamente ansioso o deprimido","Estoy muy ansioso o deprimido","Estoy extremadamente ansioso o deprimido"]},
+];
+const eqWrap=document.getElementById("eqDims");
+EQ_DIMS.forEach(dim=>{
+  const block=document.createElement("div"); block.className="eq-dim";
+  block.innerHTML=`<div class="eq-q">${dim.q}${dim.sub?`<small>${dim.sub}</small>`:""}</div>`;
+  dim.levels.forEach((txt,i)=>{
+    const opt=document.createElement("div"); opt.className="eq-opt";
+    opt.innerHTML=`<span class="num">${i+1}</span><span>${txt}</span>`;
+    opt.addEventListener("click",()=>{
+      block.querySelectorAll(".eq-opt").forEach(o=>o.classList.remove("on"));
+      opt.classList.add("on"); state.eq[dim.key]=i+1;
+    });
+    block.appendChild(opt);
+  });
+  eqWrap.appendChild(block);
+});
+const vas=document.getElementById("eqVas"),vasVal=document.getElementById("eqVasVal");
+vas.addEventListener("input",()=>vasVal.textContent=`${vas.value} / 100`);
+
+/* helpers */
+const val=id=>document.getElementById(id).value.trim();
+const SEP="========================================";
+const sub="----------------------------------------";
+
+function recolectar(){
+  const c=state.chips;
+  let alergias="";
+  if(c.alergiaSiNo==="No") alergias="No refiere";
+  else if(c.alergiaSiNo==="Sí") alergias=[val("alergiaMed"),val("alergiaReac")].filter(Boolean).join(" - ")||"Sí (sin detalle)";
+  const dx = c.dx==="Otro" ? val("dxOtro") : (c.dx||"");
+  return {
+    tipo:state.tipo, fecha:val("fecha"),
+    rut:val("rut"), nombre:val("nombre"), edad:val("edad"), sexo:c.sexo||"",
+    prevision:val("prevision"), telefono:val("telefono"), email:val("email"),
+    antecedentes:val("antecedentes"), alergias, tabaquismo:c.tabaquismo||"",
+    deporte:val("deporte"), ocupacion:val("ocupacion"),
+    mamografia:c.mamografia||"", mamoDetalle:val("mamoDetalle"), pap:c.pap||"", papDetalle:val("papDetalle"),
+    lado:c.lado||"", evolucion:val("evolucion"), motivo:val("motivo"),
+    ladoExam:c.ladoExam||"", flexion:val("flexion"), extension:val("extension"), derrame:c.derrame||"",
+    mcmurray:c.mcmurray||"", estres:c.estres||"", lachman:c.lachman||"", cepillo:c.cepillo||"",
+    romCadera:c.romCadera||"", examenOtros:val("examenOtros"),
+    dx,
+    eq:{...state.eq}, eqVas:vas.value,
+    educacion:c.educacion||"", medicamentos:val("medicamentos"), examenes:val("examenes"),
+    kinesio:val("kinesio"), cirugia:val("cirugia"), control:val("control"), otras:val("otras"),
+  };
+}
+
+function eqCodigo(eq){const o=["movilidad","autocuidado","actividades","dolor","ansiedad"];
+  return o.every(k=>eq[k]) ? o.map(k=>eq[k]).join("") : null;}
+
+function construirNota(d){
+  const L=[]; const line=(k,v)=>{if(v) L.push(`${k}: ${v}`);};
+  L.push(`${d.tipo.toUpperCase()} - Traumatología de Rodilla`);
+  L.push(`Fecha: ${d.fecha}`); L.push(SEP);
+
+  L.push("PACIENTE");
+  line("RUT",d.rut); line("Nombre",d.nombre);
+  if(d.edad||d.sexo) L.push(`Edad / Sexo: ${d.edad||"-"} / ${d.sexo||"-"}`);
+  line("Previsión",d.prevision); line("Teléfono",d.telefono); line("Email",d.email);
+
+  L.push(sub); L.push("ANTECEDENTES");
+  if(d.antecedentes) L.push(d.antecedentes);
+  L.push(`Alergias: ${d.alergias||"No consignado"}`);
+  if(d.tabaquismo) L.push(`Tabaquismo: ${d.tabaquismo}`);
+  if(d.deporte) L.push(`Actividad deportiva: ${d.deporte}`);
+  if(d.ocupacion) L.push(`Ocupación: ${d.ocupacion}`);
+
+  if(d.mamografia||d.pap||d.mamoDetalle||d.papDetalle){
+    L.push(sub); L.push("TAMIZAJE ONCOLÓGICO");
+    if(d.mamografia||d.mamoDetalle) L.push(`Mamografía: ${[d.mamografia,d.mamoDetalle].filter(Boolean).join(" - ")}`);
+    if(d.pap||d.papDetalle) L.push(`PAP: ${[d.pap,d.papDetalle].filter(Boolean).join(" - ")}`);
+  }
+
+  if(d.lado||d.evolucion||d.motivo){
+    L.push(sub); L.push("MOTIVO DE CONSULTA");
+    const head=[d.lado,d.evolucion?`${d.evolucion} de evolución`:""].filter(Boolean).join(", ");
+    if(head) L.push(head.charAt(0).toUpperCase()+head.slice(1)+".");
+    if(d.motivo) L.push(d.motivo);
+  }
+
+  const exam=[];
+  if(d.ladoExam) exam.push(`Lado examinado: ${d.ladoExam}`);
+  if(d.flexion||d.extension) exam.push(`ROM rodilla: Flexión ${d.flexion||"-"}° / Extensión ${d.extension||"-"}°`);
+  if(d.derrame) exam.push(`Derrame: ${d.derrame}`);
+  if(d.romCadera) exam.push(`ROM cadera: ${d.romCadera}`);
+  if(d.cepillo) exam.push(`Dolor al cepillo: ${d.cepillo}`);
+  if(d.estres) exam.push(`Estrés varo/valgo: ${d.estres}`);
+  if(d.lachman) exam.push(`Lachman: ${d.lachman}`);
+  if(d.mcmurray) exam.push(`McMurray: ${d.mcmurray}`);
+  if(d.examenOtros) exam.push(d.examenOtros);
+  if(exam.length){L.push(sub);L.push("EXAMEN FÍSICO");exam.forEach(e=>L.push(e));}
+
+  if(d.dx){L.push(sub);L.push("DIAGNÓSTICO");L.push(d.dx);}
+
+  const code=eqCodigo(d.eq);
+  if(code||Object.keys(d.eq).length){
+    L.push(sub); L.push("CALIDAD DE VIDA (EQ-5D-5L)");
+    L.push(`Estado de salud: ${code||"incompleto"} | EVA: ${d.eqVas}/100`);
+    const o=[["Movilidad","movilidad"],["Autocuidado","autocuidado"],["Act.cotidianas","actividades"],["Dolor","dolor"],["Ansiedad","ansiedad"]];
+    const parts=o.filter(([,k])=>d.eq[k]).map(([lbl,k])=>`${lbl} ${d.eq[k]}`);
+    if(parts.length) L.push(parts.join(" | "));
+  }
+
+  const plan=[];
+  if(d.educacion) plan.push(`Educación al paciente: ${d.educacion}`);
+  if(d.medicamentos) plan.push(`Medicamentos: ${d.medicamentos}`);
+  if(d.examenes) plan.push(`Exámenes: ${d.examenes}`);
+  if(d.kinesio) plan.push(`Fisioterapia: ${d.kinesio}`);
+  if(d.cirugia) plan.push(`Cirugía: ${d.cirugia}`);
+  if(d.otras) plan.push(`Otras indicaciones: ${d.otras}`);
+  if(d.control) plan.push(`Próximo control: ${d.control}`);
+  if(plan.length){L.push(sub);L.push("PLAN");plan.forEach(p=>L.push(p));}
+
+  L.push(SEP);
+  return L.join("\n");
+}
+
+const salida=document.getElementById("salida"),notaTxt=document.getElementById("notaTxt"),statusEl=document.getElementById("status");
+
+document.getElementById("btnGenerar").addEventListener("click",()=>{
+  notaTxt.value=construirNota(recolectar());
+  salida.classList.remove("hidden");
+  statusEl.textContent="Nota generada.";
+  document.getElementById("configWarn").classList.toggle("hidden",!!SHEET_URL);
+  salida.scrollIntoView({behavior:"smooth"});
+});
+
+document.getElementById("btnCopiar").addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText(notaTxt.value);}
+  catch(e){notaTxt.select();document.execCommand("copy");}
+  const m=document.getElementById("copiadoMsg");m.classList.remove("hidden");setTimeout(()=>m.classList.add("hidden"),1800);
+});
+
+document.getElementById("btnSubir").addEventListener("click",async()=>{
+  if(!SHEET_URL){document.getElementById("configWarn").classList.remove("hidden");return;}
+  const d=recolectar(); const payload={...d,eqCodigo:eqCodigo(d.eq),enviado:new Date().toISOString()};
+  if(!SUBIR_IDENTIFICABLE){payload.nombre="(reservado)";payload.rut="ID-"+Date.now();payload.telefono="";payload.email="";}
+  statusEl.textContent="Subiendo...";
+  try{await fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(payload)});statusEl.textContent="Guardado en base de datos ✓";}
+  catch(e){statusEl.textContent="No se pudo subir (revisa la conexión o la URL).";}
+});
+
+document.getElementById("btnLimpiar").addEventListener("click",()=>{if(confirm("¿Limpiar todos los campos?"))location.reload();});
+</script>
+</body>
+</html>

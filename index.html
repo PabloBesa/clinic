@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OrthoChart · Rodilla</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1a2744; --navy-mid:#243560; --gold:#c8973a; --gold-light:#e8c47a; --gold-pale:#f5e9cc;
+    --cream:#faf8f3; --warm-gray:#f0ece3; --green:#2a6041; --green-light:#e8f2ec;
+    --red-accent:#8b2e2e; --red-light:#f5eaea; --border:#d4c9b0;
+    --font-display:'Playfair Display',Georgia,serif; --font-body:'Source Serif 4',Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--cream);color:var(--navy);max-width:600px;margin:0 auto;min-height:100vh;padding-bottom:96px}
+
+  .app-header{background:var(--navy);padding:20px 22px 16px;position:sticky;top:0;z-index:100}
+  .app-header h1{font-family:var(--font-display);color:var(--gold);font-size:1.2rem;font-weight:700;letter-spacing:.01em}
+  .app-header p{color:rgba(255,255,255,.6);font-size:.76rem;font-style:italic;margin-top:2px}
+
+  .mode-bar{background:var(--navy-mid);padding:11px 22px;display:flex;gap:8px;position:sticky;top:62px;z-index:90}
+  .mode-btn{flex:1;padding:8px 10px;border:1px solid rgba(200,151,58,.4);border-radius:20px;background:transparent;color:rgba(255,255,255,.65);font-family:var(--font-body);font-size:.82rem;cursor:pointer;transition:all .2s;text-align:center}
+  .mode-btn.active{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600}
+
+  .content{padding:20px 16px 40px}
+  .card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 16px 18px;margin-bottom:14px}
+
+  .sec-head{margin-bottom:15px}
+  .sec-head .eyebrow{font-family:var(--font-body);font-size:.68rem;text-transform:uppercase;letter-spacing:.13em;color:var(--gold);font-weight:600}
+  .sec-head h2{font-family:var(--font-display);font-size:1.22rem;color:var(--navy);font-weight:700;margin-top:1px}
+  .sec-head .note{font-style:italic;color:rgba(26,39,68,.55);font-size:.78rem;margin-top:2px}
+
+  label.fld{display:block;margin-bottom:12px}
+  .lbl{display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(26,39,68,.6);margin-bottom:6px}
+  input[type=text],input[type=number],input[type=email],input[type=tel],textarea{
+    width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:#fff;
+    font-family:var(--font-body);font-size:.9rem;color:var(--navy);outline:none;transition:border-color .2s}
+  input:focus,textarea:focus{border-color:var(--gold)}
+  textarea{resize:vertical;min-height:64px;line-height:1.5}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 12px}
+
+  .field-row{margin-bottom:14px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{padding:7px 13px;border-radius:20px;border:1px solid var(--border);background:var(--warm-gray);
+    font-family:var(--font-body);font-size:.82rem;color:rgba(26,39,68,.7);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+  .chip:active{transform:scale(.97)}
+  .chip.selected{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600}
+  .chip.selected[data-flag="ok"]{background:var(--green);border-color:var(--green);color:#fff}
+  .chip.selected[data-flag="abn"]{background:var(--red-accent);border-color:var(--red-accent);color:#fff}
+  .chip.selected[data-flag="na"]{background:#8a8a8a;border-color:#8a8a8a;color:#fff}
+
+  .hidden{display:none}
+
+  /* info boxes */
+  .box-gold{background:var(--gold-pale);border-left:4px solid var(--gold);border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px;font-size:.84rem;line-height:1.55}
+  .box-green{background:var(--green-light);border-left:4px solid var(--green);border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px;font-size:.84rem;line-height:1.55}
+  .box-gold .ttl,.box-green .ttl{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;display:block;margin-bottom:5px}
+  .box-gold .ttl{color:var(--gold)} .box-green .ttl{color:var(--green)}
+  .box pre,.prev-text{font-family:var(--font-body);font-size:.83rem;line-height:1.55;white-space:pre-wrap;color:var(--navy)}
+  .interval-big{font-family:var(--font-display);font-size:1.5rem;color:var(--navy);font-weight:700}
+  .interval-sub{font-size:.78rem;color:rgba(26,39,68,.6);font-style:italic}
+  details.prev{margin-bottom:14px}
+  details.prev summary{cursor:pointer;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);font-weight:600;list-style:none;padding:4px 0}
+  details.prev summary::-webkit-details-marker{display:none}
+  details.prev summary::before{content:"▸ ";color:var(--gold)}
+  details.prev[open] summary::before{content:"▾ "}
+
+  /* EQ-5D */
+  .eq-intro{font-size:.82rem;color:rgba(26,39,68,.7);margin-bottom:12px;font-style:italic}
+  .eq-dim{margin-bottom:16px}
+  .eq-q{font-family:var(--font-display);font-size:.95rem;color:var(--navy);font-weight:600;margin-bottom:8px}
+  .eq-q small{display:block;font-family:var(--font-body);font-weight:400;color:rgba(26,39,68,.55);font-size:.76rem;margin-top:2px;font-style:italic}
+  .eq-opt{display:flex;gap:10px;align-items:center;padding:9px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;font-size:.85rem;background:#fff;transition:all .15s}
+  .eq-opt:hover{border-color:var(--gold-light)}
+  .eq-opt .num{flex:0 0 24px;height:24px;border-radius:50%;background:var(--warm-gray);color:rgba(26,39,68,.6);font-weight:700;font-size:.75rem;display:flex;align-items:center;justify-content:center}
+  .eq-opt.on{background:var(--gold-pale);border-color:var(--gold)}
+  .eq-opt.on .num{background:var(--gold);color:var(--navy)}
+  .vas-intro{font-size:.8rem;color:rgba(26,39,68,.65);margin:4px 0 10px;line-height:1.5}
+  .vas-row{display:flex;align-items:center;gap:12px}
+  .vas-row input[type=range]{flex:1;accent-color:var(--gold)}
+  .vas-val{font-family:var(--font-display);font-weight:700;font-size:1rem;min-width:58px;text-align:right}
+  .eq-foot{font-size:.7rem;color:rgba(26,39,68,.45);margin-top:14px;border-top:1px solid var(--border);padding-top:10px}
+
+  /* actions */
+  .actionbar{position:fixed;left:0;right:0;bottom:0;max-width:600px;margin:0 auto;background:#fff;border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:10px;align-items:center;z-index:100}
+  .actionbar .status{margin-right:auto;font-size:.8rem;color:rgba(26,39,68,.6);font-style:italic}
+  .btn{font-family:var(--font-display);font-size:.92rem;font-weight:700;padding:12px 20px;border-radius:10px;border:1px solid var(--border);background:#fff;color:var(--navy);cursor:pointer;transition:all .2s}
+  .btn-ghost{font-family:var(--font-body);font-weight:400;color:rgba(26,39,68,.55)}
+  .btn-primary{background:var(--green);border-color:var(--green);color:#fff}
+  .btn-primary:active{opacity:.85}
+  .btn-load{background:var(--navy);border-color:var(--navy);color:var(--gold);font-family:var(--font-body);font-weight:600;font-size:.82rem;padding:9px 16px;width:100%;margin-top:4px}
+
+  #notaTxt{width:100%;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;line-height:1.55;color:var(--navy);border:1px solid var(--border);border-radius:8px;padding:14px;background:var(--cream);min-height:300px}
+  .copied{color:var(--green);font-weight:600;font-size:.82rem}
+  .config-warn{background:var(--gold-pale);border:1px solid var(--gold-light);color:#7a5d12;font-size:.8rem;padding:9px 12px;border-radius:8px;margin-top:10px;line-height:1.5}
+
+  .toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:11px 20px;border-radius:24px;font-size:.85rem;opacity:0;transition:all .3s;z-index:300;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.error{background:var(--red-accent)} .toast.success{background:var(--green)}
+</style>
+</head>
+<body>
+<div class="app-header">
+  <h1>OrthoChart</h1>
+  <p>Traumatología de rodilla</p>
+</div>
+
+<div class="mode-bar">
+  <button class="mode-btn active" data-mode="Ingreso">Ingreso</button>
+  <button class="mode-btn" data-mode="Control">Control</button>
+</div>
+
+<div class="content">
+
+  <!-- FECHA -->
+  <div class="card">
+    <div class="sec-head"><span class="eyebrow">Consulta</span><h2 id="tipoTitulo">Ingreso</h2></div>
+    <label class="fld" style="max-width:220px"><span class="lbl">Fecha</span><input type="text" id="fecha"></label>
+  </div>
+
+  <!-- ===== SOLO CONTROL: pegar previa ===== -->
+  <div id="ctrlPaste" class="card hidden">
+    <div class="sec-head"><span class="eyebrow">Control</span><h2>Consulta anterior</h2>
+      <p class="note">Pega la ficha previa (ingreso o control generado por OrthoChart) y cárgala.</p></div>
+    <textarea id="pegarPrevia" placeholder="Pega aquí la consulta anterior..."></textarea>
+    <button class="btn btn-load" id="btnCargar">Cargar consulta anterior</button>
+  </div>
+
+  <!-- ===== SOLO CONTROL: resumen previo ===== -->
+  <div id="ctrlResumen" class="card hidden">
+    <div class="sec-head"><span class="eyebrow">Paciente</span><h2 id="resNombre">—</h2>
+      <p class="note" id="resDatos"></p></div>
+    <div class="box-gold">
+      <span class="ttl">Tiempo desde último control</span>
+      <span class="interval-big" id="intervalo">—</span>
+      <span class="interval-sub" id="intervaloSub"></span>
+    </div>
+    <details class="prev"><summary>Plan previo</summary>
+      <div class="box-green" style="margin-top:8px"><div class="prev-text" id="prevPlan">—</div></div>
+    </details>
+    <details class="prev"><summary>Examen previo</summary>
+      <div class="box-green" style="margin-top:8px"><div class="prev-text" id="prevExam">—</div></div>
+    </details>
+    <label class="fld" style="margin-top:4px;margin-bottom:0"><span class="lbl">Evolución desde el último control</span>
+      <textarea id="evolucion" placeholder="Cómo ha estado, respuesta al tratamiento, nuevos síntomas..."></textarea></label>
+  </div>
+
+  <!-- ===== SOLO INGRESO: paciente ===== -->
+  <div id="ingPaciente" class="card">
+    <div class="sec-head"><span class="eyebrow">Datos</span><h2>Paciente</h2></div>
+    <label class="fld"><span class="lbl">RUT</span><input type="text" id="rut" placeholder="12.345.678-9"></label>
+    <label class="fld"><span class="lbl">Nombre</span><input type="text" id="nombre"></label>
+    <div class="grid">
+      <label class="fld"><span class="lbl">Edad</span><input type="number" id="edad" min="0" max="120"></label>
+      <div class="field-row"><span class="lbl">Sexo</span>
+        <div class="chips" data-field="sexo">
+          <div class="chip" data-value="Masculino">Masculino</div>
+          <div class="chip" data-value="Femenino">Femenino</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-3">
+      <label class="fld"><span class="lbl">Previsión</span><input type="text" id="prevision" placeholder="Fonasa / Isapre"></label>
+      <label class="fld"><span class="lbl">Teléfono</span><input type="tel" id="telefono"></label>
+      <label class="fld"><span class="lbl">Email</span><input type="email" id="email"></label>
+    </div>
+  </div>
+
+  <!-- ===== SOLO INGRESO: antecedentes ===== -->
+  <div id="ingAntecedentes" class="card">
+    <div class="sec-head"><span class="eyebrow">Historia</span><h2>Antecedentes</h2></div>
+    <label class="fld"><span class="lbl">Antecedentes médicos</span><textarea id="antecedentes" placeholder="HTA, DM2, cirugías previas..."></textarea></label>
+    <div class="field-row"><span class="lbl">Alergias</span>
+      <div class="chips" data-field="alergiaSiNo">
+        <div class="chip" data-flag="ok" data-value="No">No</div>
+        <div class="chip" data-flag="abn" data-value="Sí">Sí</div>
+      </div>
+    </div>
+    <div id="alergiaDetalle" class="hidden">
+      <div class="grid">
+        <label class="fld"><span class="lbl">Medicamento / sustancia</span><input type="text" id="alergiaMed"></label>
+        <label class="fld"><span class="lbl">Reacción</span><input type="text" id="alergiaReac" placeholder="Urticaria, anafilaxia..."></label>
+      </div>
+    </div>
+    <div class="field-row"><span class="lbl">Tabaquismo</span>
+      <div class="chips" data-field="tabaquismo">
+        <div class="chip" data-flag="ok" data-value="No">No</div>
+        <div class="chip" data-value="Ex-fumador">Ex-fumador</div>
+        <div class="chip" data-flag="abn" data-value="Activo">Activo</div>
+      </div>
+    </div>
+    <div class="grid">
+      <label class="fld"><span class="lbl">Actividad deportiva</span><input type="text" id="deporte"></label>
+      <label class="fld"><span class="lbl">Ocupación</span><input type="text" id="ocupacion"></label>
+    </div>
+  </div>
+
+  <!-- ===== SOLO INGRESO: tamizaje ===== -->
+  <div id="ingTamizaje" class="card hidden">
+    <div class="sec-head"><span class="eyebrow">Prevención</span><h2>Tamizaje oncológico</h2><p class="note">Mujeres ≥ 40 años</p></div>
+    <div class="field-row"><span class="lbl">Mamografía</span>
+      <div class="chips" data-field="mamografia">
+        <div class="chip" data-flag="ok" data-value="Vigente">Vigente</div>
+        <div class="chip" data-flag="abn" data-value="No vigente">No vigente</div>
+        <div class="chip" data-flag="abn" data-value="No realizada">No realizada</div>
+      </div>
+    </div>
+    <label class="fld"><span class="lbl">Mamografía — detalle</span><input type="text" id="mamoDetalle" placeholder="Fecha o resultado"></label>
+    <div class="field-row"><span class="lbl">PAP</span>
+      <div class="chips" data-field="pap">
+        <div class="chip" data-flag="ok" data-value="Vigente">Vigente</div>
+        <div class="chip" data-flag="abn" data-value="No vigente">No vigente</div>
+        <div class="chip" data-flag="abn" data-value="No realizado">No realizado</div>
+      </div>
+    </div>
+    <label class="fld" style="margin-bottom:0"><span class="lbl">PAP — detalle</span><input type="text" id="papDetalle" placeholder="Fecha o resultado"></label>
+  </div>
+
+  <!-- ===== SOLO INGRESO: motivo ===== -->
+  <div id="ingMotivo" class="card">
+    <div class="sec-head"><span class="eyebrow">Consulta</span><h2>Motivo</h2></div>
+    <div class="field-row"><span class="lbl">Lateralidad</span>
+      <div class="chips" data-field="lado">
+        <div class="chip" data-value="rodilla derecha">Derecha</div>
+        <div class="chip" data-value="rodilla izquierda">Izquierda</div>
+        <div class="chip" data-value="ambas rodillas">Bilateral</div>
+      </div>
+    </div>
+    <label class="fld"><span class="lbl">Tiempo de evolución</span><input type="text" id="evolIngreso" placeholder="3 meses"></label>
+    <label class="fld" style="margin-bottom:0"><span class="lbl">Historia breve</span><textarea id="motivo" placeholder="Gonalgia, mecanismo, síntomas asociados..."></textarea></label>
+  </div>
+
+  <!-- ===== COMPARTIDO: examen físico ===== -->
+  <div class="card">
+    <div class="sec-head"><span class="eyebrow">Exploración</span><h2 id="examTitulo">Examen físico</h2></div>
+    <div class="field-row"><span class="lbl">Lado examinado</span>
+      <div class="chips" data-field="ladoExam">
+        <div class="chip" data-value="Rodilla derecha">Derecha</div>
+        <div class="chip" data-value="Rodilla izquierda">Izquierda</div>
+        <div class="chip" data-value="Ambas rodillas">Bilateral</div>
+      </div>
+    </div>
+    <div class="grid">
+      <label class="fld"><span class="lbl">Flexión (°)</span><input type="number" id="flexion" placeholder="130"></label>
+      <label class="fld"><span class="lbl">Extensión (°)</span><input type="number" id="extension" placeholder="0"></label>
+    </div>
+    <div class="field-row"><span class="lbl">Derrame articular</span>
+      <div class="chips" data-field="derrame">
+        <div class="chip" data-flag="ok" data-value="No">No</div>
+        <div class="chip" data-flag="abn" data-value="Leve">Leve</div>
+        <div class="chip" data-flag="abn" data-value="Moderado">Moderado</div>
+        <div class="chip" data-flag="abn" data-value="Severo">Severo</div>
+        <div class="chip" data-flag="na" data-value="No evaluado">No evaluado</div>
+      </div>
+    </div>
+    <div class="field-row"><span class="lbl">ROM de cadera</span>
+      <div class="chips" data-field="romCadera">
+        <div class="chip" data-flag="ok" data-value="Normal">Normal</div>
+        <div class="chip" data-flag="abn" data-value="Disminución RI">Disminución RI</div>
+        <div class="chip" data-flag="abn" data-value="Disminución RE">Disminución RE</div>
+        <div class="chip" data-flag="na" data-value="No evaluado">No evaluado</div>
+      </div>
+    </div>
+    <div class="field-row"><span class="lbl">Dolor al cepillo (rótula)</span>
+      <div class="chips" data-field="cepillo">
+        <div class="chip" data-flag="ok" data-value="Negativo">Negativo</div>
+        <div class="chip" data-flag="abn" data-value="Positivo">Positivo</div>
+        <div class="chip" data-flag="na" data-value="No evaluado">No evaluado</div>
+      </div>
+    </div>
+    <div class="field-row"><span class="lbl">Estrés varo/valgo</span>
+      <div class="chips" data-field="estres">
+        <div class="chip" data-flag="ok" data-value="Estable">Estable</div>
+        <div class="chip" data-flag="abn" data-value="Laxitud medial">Laxitud medial</div>
+        <div class="chip" data-flag="abn" data-value="Laxitud lateral">Laxitud lateral</div>
+        <div class="chip" data-flag="na" data-value="No evaluado">No evaluado</div>
+      </div>
+    </div>
+    <div class="field-row"><span class="lbl">Lachman</span>
+      <div class="chips" data-field="lachman">
+        <div class="chip" data-flag="ok" data-value="Negativo">Negativo</div>
+        <div class="chip" data-flag="abn" data-value="Positivo">Positivo</div>
+        <div class="chip" data-flag="na" data-value="No evaluado">No evaluado</div>
+      </div>
+    </div>
+    <div class="field-row"><span class="lbl">McMurray</span>
+      <div class="chips" data-field="mcmurray">
+        <div class="chip" data-flag="ok" data-value="Negativo">Negativo</div>
+        <div class="chip" data-flag="abn" data-value="Positivo medial">Positivo medial</div>
+        <div class="chip" data-flag="abn" data-value="Positivo lateral">Positivo lateral</div>
+        <div class="chip" data-flag="na" data-value="No evaluado">No evaluado</div>
+      </div>
+    </div>
+    <label class="fld" style="margin-top:4px;margin-bottom:0"><span class="lbl">Otros hallazgos</span><textarea id="examenOtros" placeholder="Marcha, atrofia de cuádriceps, dolor a la palpación..."></textarea></label>
+  </div>
+
+  <!-- ===== COMPARTIDO: diagnóstico ===== -->
+  <div class="card">
+    <div class="sec-head"><span class="eyebrow">Impresión</span><h2>Diagnóstico</h2></div>
+    <div class="field-row" style="margin-bottom:0"><span class="lbl">Diagnóstico más frecuente</span>
+      <div class="chips" data-field="dx">
+        <div class="chip" data-value="Gonartrosis">Gonartrosis</div>
+        <div class="chip" data-value="Lesión meniscal medial">Lesión meniscal medial</div>
+        <div class="chip" data-value="Lesión meniscal lateral">Lesión meniscal lateral</div>
+        <div class="chip" data-value="Rotura LCA">Rotura LCA</div>
+        <div class="chip" data-value="Rotura LCP">Rotura LCP</div>
+        <div class="chip" data-value="Condromalacia rotuliana">Condromalacia rotuliana</div>
+        <div class="chip" data-value="Síndrome patelofemoral">Síndrome patelofemoral</div>
+        <div class="chip" data-value="Inestabilidad rotuliana">Inestabilidad rotuliana</div>
+        <div class="chip" data-value="Tendinopatía rotuliana">Tendinopatía rotuliana</div>
+        <div class="chip" data-value="Otro">Otro (especificar)</div>
+      </div>
+    </div>
+    <div id="dxOtroBox" class="hidden" style="margin-top:12px">
+      <label class="fld" style="margin-bottom:0"><span class="lbl">Especificar diagnóstico</span><input type="text" id="dxOtro"></label>
+    </div>
+  </div>
+
+  <!-- ===== COMPARTIDO: EQ-5D-5L ===== -->
+  <div class="card">
+    <div class="sec-head"><span class="eyebrow">Calidad de vida</span><h2>EQ-5D-5L</h2></div>
+    <p class="eq-intro">Indique cuál de las siguientes afirmaciones describe mejor su salud HOY.</p>
+    <div id="eqDims"></div>
+    <div style="margin-top:6px">
+      <div class="eq-q">Su salud HOY — EVA</div>
+      <p class="vas-intro">Esta escala va de 0 a 100. El 100 representa la mejor salud que usted se pueda imaginar y el 0 la peor. Indique cómo es su salud HOY.</p>
+      <div class="vas-row">
+        <input type="range" id="eqVas" min="0" max="100" value="50">
+        <span class="vas-val" id="eqVasVal">50/100</span>
+      </div>
+    </div>
+    <div class="eq-foot">EQ-5D-5L © EuroQol Research Foundation. Para uso clínico formal o de investigación, verifique su licencia en euroqol.org.</div>
+  </div>
+
+  <!-- ===== COMPARTIDO: plan ===== -->
+  <div class="card">
+    <div class="sec-head"><span class="eyebrow">Conducta</span><h2 id="planTitulo">Plan</h2></div>
+    <div class="field-row"><span class="lbl">Educación al paciente</span>
+      <div class="chips" data-field="educacion">
+        <div class="chip" data-value="Sí">Sí</div>
+        <div class="chip" data-value="No">No</div>
+      </div>
+    </div>
+    <label class="fld"><span class="lbl">Medicamentos</span><input type="text" id="medicamentos"></label>
+    <label class="fld"><span class="lbl">Exámenes / imágenes</span><input type="text" id="examenes"></label>
+    <div class="grid">
+      <label class="fld"><span class="lbl">Fisioterapia / kinesioterapia</span><input type="text" id="kinesio"></label>
+      <label class="fld"><span class="lbl">Próximo control</span><input type="text" id="control" placeholder="3 semanas"></label>
+    </div>
+    <label class="fld"><span class="lbl">Cirugía / conducta</span><input type="text" id="cirugia"></label>
+    <label class="fld" style="margin-bottom:0"><span class="lbl">Otras indicaciones</span><textarea id="otras"></textarea></label>
+  </div>
+
+  <!-- ===== SALIDA ===== -->
+  <div class="card hidden" id="salida">
+    <div class="sec-head" style="display:flex;justify-content:space-between;align-items:flex-end">
+      <div><span class="eyebrow">Resultado</span><h2>Nota para el sistema</h2></div>
+      <span class="copied hidden" id="copiadoMsg">Copiado ✓</span>
+    </div>
+    <textarea id="notaTxt" readonly></textarea>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <button class="btn btn-primary" id="btnCopiar">Copiar nota</button>
+      <button class="btn" id="btnSubir">Subir a base de datos</button>
+    </div>
+    <div class="config-warn hidden" id="configWarn">
+      La base de datos aún no está configurada — ese es el siguiente paso.
+      Por ahora la nota se genera y puedes copiarla normalmente.
+    </div>
+  </div>
+
+</div>
+
+<div class="actionbar">
+  <span class="status" id="status"></span>
+  <button class="btn btn-ghost" id="btnLimpiar">Limpiar</button>
+  <button class="btn btn-primary" id="btnGenerar">Generar nota</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* URL del Apps Script (termina en /exec) */
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwkRUTJoMrOZ6HuK0LhRo6yAF--dQYEf9A239yd4p_tXxSknLxL7ZjlCQrdQR2lEDob/exec";
+
+const state = { modo:"Ingreso", chips:{}, eq:{}, prev:null };
+const $ = id => document.getElementById(id);
+const val = id => ($(id) ? $(id).value.trim() : "");
+const SEP="========================================";
+const sub="----------------------------------------";
+
+/* fecha de hoy */
+function hoyStr(){const d=new Date(),p=n=>String(n).padStart(2,"0");return `${p(d.getDate())}-${p(d.getMonth()+1)}-${d.getFullYear()}`;}
+$("fecha").value=hoyStr();
+
+function toast(msg,type){const t=$("toast");t.textContent=msg;t.className="toast "+(type||"");t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2600);}
+
+/* ---------- modo Ingreso / Control ---------- */
+const ingresoOnly=["ingPaciente","ingAntecedentes","ingMotivo"];
+const controlOnly=["ctrlPaste","ctrlResumen"];
+function setModo(m){
+  state.modo=m;
+  document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active",b.dataset.mode===m));
+  const isCtrl=m==="Control";
+  ingresoOnly.forEach(id=>$(id).classList.toggle("hidden",isCtrl));
+  controlOnly.forEach(id=>$(id).classList.toggle("hidden",!isCtrl));
+  if(!isCtrl) $("ingTamizaje").classList.toggle("hidden",!tamizajeAplica());
+  else $("ingTamizaje").classList.add("hidden");
+  $("tipoTitulo").textContent=m;
+  $("examTitulo").textContent=isCtrl?"Examen físico actual":"Examen físico";
+  $("planTitulo").textContent=isCtrl?"Plan nuevo":"Plan";
+}
+document.querySelectorAll(".mode-btn").forEach(b=>b.addEventListener("click",()=>setModo(b.dataset.mode)));
+
+/* ---------- chips ---------- */
+function bindChips(){
+  document.querySelectorAll(".chips").forEach(group=>{
+    const field=group.dataset.field;
+    group.querySelectorAll(".chip").forEach(chip=>{
+      chip.onclick=()=>{
+        const was=chip.classList.contains("selected");
+        group.querySelectorAll(".chip").forEach(c=>c.classList.remove("selected"));
+        state.chips[field]= was?null:chip.dataset.value;
+        if(!was) chip.classList.add("selected");
+        if(field==="sexo") refreshTamizaje();
+        if(field==="alergiaSiNo") $("alergiaDetalle").classList.toggle("hidden",state.chips[field]!=="Sí");
+        if(field==="dx") $("dxOtroBox").classList.toggle("hidden",state.chips[field]!=="Otro");
+      };
+    });
+  });
+}
+bindChips();
+function selectChip(field,value){
+  const group=document.querySelector(`.chips[data-field="${field}"]`);
+  if(!group) return;
+  group.querySelectorAll(".chip").forEach(c=>{
+    const on=c.dataset.value===value; c.classList.toggle("selected",on);
+  });
+  state.chips[field]=value;
+}
+
+/* ---------- tamizaje ---------- */
+function tamizajeAplica(){return state.chips.sexo==="Femenino" && parseInt(val("edad")||"0",10)>=40;}
+function refreshTamizaje(){ if(state.modo==="Ingreso") $("ingTamizaje").classList.toggle("hidden",!tamizajeAplica()); }
+$("edad").addEventListener("input",refreshTamizaje);
+
+/* ---------- EQ-5D-5L ---------- */
+const EQ_DIMS=[
+  {key:"movilidad",q:"Movilidad",levels:["No tengo problemas para caminar","Tengo problemas leves para caminar","Tengo problemas moderados para caminar","Tengo problemas graves para caminar","No puedo caminar"]},
+  {key:"autocuidado",q:"Cuidado personal",levels:["No tengo problemas para lavarme o vestirme","Tengo problemas leves para lavarme o vestirme","Tengo problemas moderados para lavarme o vestirme","Tengo problemas graves para lavarme o vestirme","No puedo lavarme o vestirme"]},
+  {key:"actividades",q:"Actividades cotidianas",sub:"(p. ej. trabajar, estudiar, tareas domésticas, actividades familiares o de tiempo libre)",levels:["No tengo problemas para realizar mis actividades cotidianas","Tengo problemas leves para realizar mis actividades cotidianas","Tengo problemas moderados para realizar mis actividades cotidianas","Tengo problemas graves para realizar mis actividades cotidianas","No puedo realizar mis actividades cotidianas"]},
+  {key:"dolor",q:"Dolor o malestar",levels:["No tengo dolor ni malestar","Tengo dolor o malestar leve","Tengo dolor o malestar moderado","Tengo dolor o malestar fuerte","Tengo dolor o malestar extremo"]},
+  {key:"ansiedad",q:"Ansiedad o depresión",levels:["No estoy ansioso ni deprimido","Estoy levemente ansioso o deprimido","Estoy moderadamente ansioso o deprimido","Estoy muy ansioso o deprimido","Estoy extremadamente ansioso o deprimido"]},
+];
+const eqWrap=$("eqDims");
+EQ_DIMS.forEach(dim=>{
+  const block=document.createElement("div"); block.className="eq-dim";
+  block.innerHTML=`<div class="eq-q">${dim.q}${dim.sub?`<small>${dim.sub}</small>`:""}</div>`;
+  dim.levels.forEach((txt,i)=>{
+    const opt=document.createElement("div"); opt.className="eq-opt";
+    opt.innerHTML=`<span class="num">${i+1}</span><span>${txt}</span>`;
+    opt.onclick=()=>{block.querySelectorAll(".eq-opt").forEach(o=>o.classList.remove("on"));opt.classList.add("on");state.eq[dim.key]=i+1;};
+    block.appendChild(opt);
+  });
+  eqWrap.appendChild(block);
+});
+const vas=$("eqVas"); vas.addEventListener("input",()=>$("eqVasVal").textContent=`${vas.value}/100`);
+function eqCodigo(eq){const o=["movilidad","autocuidado","actividades","dolor","ansiedad"];return o.every(k=>eq[k])?o.map(k=>eq[k]).join(""):null;}
+
+/* =====================================================
+   PARSER de notas OrthoChart (ingreso o control)
+   ===================================================== */
+const KNOWN_KEYS=["RUT","Nombre","Edad / Sexo","Previsión","Teléfono","Email","Alergias","Tabaquismo","Actividad deportiva","Ocupación"];
+function parseNota(text){
+  const lines=text.split(/\r?\n/).map(l=>l.trim());
+  const out={tipo:"",fecha:"",sections:{}};
+  if(lines[0]) out.tipo=/CONTROL/i.test(lines[0])?"Control":(/INGRESO/i.test(lines[0])?"Ingreso":"");
+  const HEADERS=["PACIENTE","ANTECEDENTES","TAMIZAJE ONCOLÓGICO","MOTIVO DE CONSULTA","EVOLUCIÓN","EXAMEN FÍSICO","DIAGNÓSTICO","CALIDAD DE VIDA (EQ-5D-5L)","PLAN"];
+  const isSep=l=>/^[=]{6,}$/.test(l)||/^[-]{6,}$/.test(l);
+  let cur="_head";
+  lines.forEach(l=>{
+    if(!l||isSep(l)) return;
+    if(cur==="_head"&&/^Fecha:/i.test(l)){out.fecha=l.replace(/^Fecha:\s*/i,"").trim();return;}
+    if(cur==="_head"&&/^Última consulta:/i.test(l)) return;
+    const up=l.toUpperCase().replace(/\s+/g," ");
+    const h=HEADERS.find(H=>up===H);
+    if(h){cur=h;out.sections[h]=[];return;}
+    (out.sections[cur]=out.sections[cur]||[]).push(l);
+  });
+  return out;
+}
+function kv(arr,key){if(!arr)return"";const ln=arr.find(l=>l.toUpperCase().startsWith(key.toUpperCase()+":"));return ln?ln.slice(ln.indexOf(":")+1).trim():"";}
+function diasDesde(fechaStr){const m=(fechaStr||"").match(/(\d{1,2})-(\d{1,2})-(\d{4})/);if(!m)return null;const prev=new Date(+m[3],+m[2]-1,+m[1]);const t=new Date();t.setHours(0,0,0,0);prev.setHours(0,0,0,0);return Math.round((t-prev)/86400000);}
+function fmtIntervalo(dias){if(dias==null)return["—",""];const meses=Math.floor(dias/30),rd=dias%30;let sub="";if(meses>0)sub=`${meses} mes${meses>1?"es":""}${rd?` y ${rd} día${rd>1?"s":""}`:""}`;return[`${dias} día${dias===1?"":"s"}`,sub];}
+
+/* cargar consulta anterior */
+$("btnCargar").addEventListener("click",()=>{
+  const text=val("pegarPrevia");
+  if(!text){toast("Pega primero la consulta anterior","error");return;}
+  const d=parseNota(text);
+  const pac=d.sections["PACIENTE"]||[], ant=d.sections["ANTECEDENTES"]||[];
+  const es=kv(pac,"Edad / Sexo"); const [edadP,sexoP]=es.split("/").map(s=>s.trim());
+  const antMed=(ant.filter(l=>!KNOWN_KEYS.some(k=>l.toUpperCase().startsWith(k.toUpperCase()+":")))).join(" ");
+  state.prev={
+    rut:kv(pac,"RUT"), nombre:kv(pac,"Nombre"), edad:edadP||"", sexo:sexoP||"",
+    prevision:kv(pac,"Previsión"), telefono:kv(pac,"Teléfono"), email:kv(pac,"Email"),
+    antecedentes:antMed, alergias:kv(ant,"Alergias"), tabaquismo:kv(ant,"Tabaquismo"),
+    deporte:kv(ant,"Actividad deportiva"), ocupacion:kv(ant,"Ocupación"),
+    dx:(d.sections["DIAGNÓSTICO"]||[]).join(" "),
+    planLines:d.sections["PLAN"]||[], examLines:d.sections["EXAMEN FÍSICO"]||[],
+    fecha:d.fecha,
+  };
+  // resumen visible
+  $("resNombre").textContent=state.prev.nombre||"Paciente";
+  $("resDatos").textContent=[state.prev.rut,[state.prev.edad,state.prev.sexo].filter(Boolean).join(" / "),state.prev.prevision].filter(Boolean).join("  ·  ");
+  const dias=diasDesde(state.prev.fecha); const [big,sb]=fmtIntervalo(dias);
+  $("intervalo").textContent=big;
+  $("intervaloSub").textContent=state.prev.fecha?`Última consulta: ${state.prev.fecha}${sb?" · "+sb:""}`:"";
+  $("prevPlan").textContent=state.prev.planLines.length?state.prev.planLines.join("\n"):"Sin plan registrado";
+  $("prevExam").textContent=state.prev.examLines.length?state.prev.examLines.join("\n"):"Sin examen registrado";
+  // pre-seleccionar diagnóstico
+  if(state.prev.dx){
+    const known=[...document.querySelectorAll('.chips[data-field="dx"] .chip')].map(c=>c.dataset.value);
+    const match=known.find(k=>k!=="Otro"&&state.prev.dx.toLowerCase().includes(k.toLowerCase()));
+    if(match){selectChip("dx",match);$("dxOtroBox").classList.add("hidden");}
+    else{selectChip("dx","Otro");$("dxOtroBox").classList.remove("hidden");$("dxOtro").value=state.prev.dx;}
+  }
+  $("ctrlResumen").classList.remove("hidden");
+  toast("Consulta anterior cargada","success");
+  $("ctrlResumen").scrollIntoView({behavior:"smooth",block:"start"});
+});
+
+/* ---------- recolectar ---------- */
+function recolectar(){
+  const c=state.chips;
+  let alergias="";
+  if(c.alergiaSiNo==="No") alergias="No refiere";
+  else if(c.alergiaSiNo==="Sí") alergias=[val("alergiaMed"),val("alergiaReac")].filter(Boolean).join(" - ")||"Sí (sin detalle)";
+  const dx=c.dx==="Otro"?val("dxOtro"):(c.dx||"");
+  const base={
+    modo:state.modo, fecha:val("fecha"),
+    ladoExam:c.ladoExam||"", flexion:val("flexion"), extension:val("extension"),
+    derrame:c.derrame||"", romCadera:c.romCadera||"", cepillo:c.cepillo||"", estres:c.estres||"",
+    lachman:c.lachman||"", mcmurray:c.mcmurray||"", examenOtros:val("examenOtros"),
+    dx, eq:{...state.eq}, eqVas:vas.value,
+    educacion:c.educacion||"", medicamentos:val("medicamentos"), examenes:val("examenes"),
+    kinesio:val("kinesio"), cirugia:val("cirugia"), control:val("control"), otras:val("otras"),
+  };
+  if(state.modo==="Control" && state.prev){
+    const p=state.prev;
+    Object.assign(base,{rut:p.rut,nombre:p.nombre,edad:p.edad,sexo:p.sexo,prevision:p.prevision,
+      telefono:p.telefono,email:p.email,antecedentes:p.antecedentes,alergias:p.alergias||"",
+      tabaquismo:p.tabaquismo,deporte:p.deporte,ocupacion:p.ocupacion,
+      evolucion:val("evolucion"), fechaPrev:p.fecha});
+  }else{
+    Object.assign(base,{rut:val("rut"),nombre:val("nombre"),edad:val("edad"),sexo:c.sexo||"",
+      prevision:val("prevision"),telefono:val("telefono"),email:val("email"),
+      antecedentes:val("antecedentes"),alergias,tabaquismo:c.tabaquismo||"",deporte:val("deporte"),ocupacion:val("ocupacion"),
+      mamografia:c.mamografia||"",mamoDetalle:val("mamoDetalle"),pap:c.pap||"",papDetalle:val("papDetalle"),
+      lado:c.lado||"",evolIngreso:val("evolIngreso"),motivo:val("motivo")});
+  }
+  return base;
+}
+
+/* ---------- construir nota ---------- */
+function construirNota(d){
+  const L=[]; const line=(k,v)=>{if(v)L.push(`${k}: ${v}`);};
+  L.push(`${d.modo.toUpperCase()} - Traumatología de Rodilla`);
+  L.push(`Fecha: ${d.fecha}`);
+  if(d.modo==="Control"&&d.fechaPrev){const dd=diasDesde(d.fechaPrev);L.push(`Última consulta: ${d.fechaPrev}${dd!=null?` (hace ${dd} día${dd===1?"":"s"})`:""}`);}
+  L.push(SEP);
+
+  L.push("PACIENTE");
+  line("RUT",d.rut); line("Nombre",d.nombre);
+  if(d.edad||d.sexo) L.push(`Edad / Sexo: ${d.edad||"-"} / ${d.sexo||"-"}`);
+  line("Previsión",d.prevision); line("Teléfono",d.telefono); line("Email",d.email);
+
+  L.push(sub); L.push("ANTECEDENTES");
+  if(d.antecedentes) L.push(d.antecedentes);
+  L.push(`Alergias: ${d.alergias||"No consignado"}`);
+  if(d.tabaquismo) L.push(`Tabaquismo: ${d.tabaquismo}`);
+  if(d.deporte) L.push(`Actividad deportiva: ${d.deporte}`);
+  if(d.ocupacion) L.push(`Ocupación: ${d.ocupacion}`);
+
+  if(d.modo==="Ingreso"){
+    if(d.mamografia||d.pap||d.mamoDetalle||d.papDetalle){
+      L.push(sub); L.push("TAMIZAJE ONCOLÓGICO");
+      if(d.mamografia||d.mamoDetalle) L.push(`Mamografía: ${[d.mamografia,d.mamoDetalle].filter(Boolean).join(" - ")}`);
+      if(d.pap||d.papDetalle) L.push(`PAP: ${[d.pap,d.papDetalle].filter(Boolean).join(" - ")}`);
+    }
+    if(d.lado||d.evolIngreso||d.motivo){
+      L.push(sub); L.push("MOTIVO DE CONSULTA");
+      const head=[d.lado,d.evolIngreso?`${d.evolIngreso} de evolución`:""].filter(Boolean).join(", ");
+      if(head) L.push(head.charAt(0).toUpperCase()+head.slice(1)+".");
+      if(d.motivo) L.push(d.motivo);
+    }
+  }else{
+    if(d.evolucion){L.push(sub);L.push("EVOLUCIÓN");L.push(d.evolucion);}
+  }
+
+  const exam=[];
+  if(d.ladoExam) exam.push(`Lado examinado: ${d.ladoExam}`);
+  if(d.flexion||d.extension) exam.push(`ROM rodilla: Flexión ${d.flexion||"-"}° / Extensión ${d.extension||"-"}°`);
+  if(d.derrame) exam.push(`Derrame: ${d.derrame}`);
+  if(d.romCadera) exam.push(`ROM cadera: ${d.romCadera}`);
+  if(d.cepillo) exam.push(`Dolor al cepillo: ${d.cepillo}`);
+  if(d.estres) exam.push(`Estrés varo/valgo: ${d.estres}`);
+  if(d.lachman) exam.push(`Lachman: ${d.lachman}`);
+  if(d.mcmurray) exam.push(`McMurray: ${d.mcmurray}`);
+  if(d.examenOtros) exam.push(d.examenOtros);
+  if(exam.length){L.push(sub);L.push("EXAMEN FÍSICO");exam.forEach(e=>L.push(e));}
+
+  if(d.dx){L.push(sub);L.push("DIAGNÓSTICO");L.push(d.dx);}
+
+  const code=eqCodigo(d.eq);
+  if(code||Object.keys(d.eq).length){
+    L.push(sub); L.push("CALIDAD DE VIDA (EQ-5D-5L)");
+    L.push(`Estado de salud: ${code||"incompleto"} | EVA: ${d.eqVas}/100`);
+    const o=[["Movilidad","movilidad"],["Autocuidado","autocuidado"],["Act.cotidianas","actividades"],["Dolor","dolor"],["Ansiedad","ansiedad"]];
+    const parts=o.filter(([,k])=>d.eq[k]).map(([lbl,k])=>`${lbl} ${d.eq[k]}`);
+    if(parts.length) L.push(parts.join(" | "));
+  }
+
+  const plan=[];
+  if(d.educacion) plan.push(`Educación al paciente: ${d.educacion}`);
+  if(d.medicamentos) plan.push(`Medicamentos: ${d.medicamentos}`);
+  if(d.examenes) plan.push(`Exámenes: ${d.examenes}`);
+  if(d.kinesio) plan.push(`Fisioterapia: ${d.kinesio}`);
+  if(d.cirugia) plan.push(`Cirugía: ${d.cirugia}`);
+  if(d.otras) plan.push(`Otras indicaciones: ${d.otras}`);
+  if(d.control) plan.push(`Próximo control: ${d.control}`);
+  if(plan.length){L.push(sub);L.push("PLAN");plan.forEach(p=>L.push(p));}
+
+  L.push(SEP);
+  return L.join("\n");
+}
+
+/* ---------- acciones ---------- */
+$("btnGenerar").addEventListener("click",()=>{
+  if(state.modo==="Control"&&!state.prev){toast("Carga primero la consulta anterior","error");return;}
+  $("notaTxt").value=construirNota(recolectar());
+  $("salida").classList.remove("hidden");
+  $("status").textContent="Nota generada.";
+  $("configWarn").classList.toggle("hidden",!!SHEET_URL);
+  $("salida").scrollIntoView({behavior:"smooth"});
+});
+$("btnCopiar").addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText($("notaTxt").value);}catch(e){$("notaTxt").select();document.execCommand("copy");}
+  const m=$("copiadoMsg");m.classList.remove("hidden");setTimeout(()=>m.classList.add("hidden"),1800);
+  toast("Nota copiada","success");
+});
+$("btnSubir").addEventListener("click",async()=>{
+  if(!SHEET_URL){$("configWarn").classList.remove("hidden");return;}
+  const d=recolectar();
+  /* Payload SIN identificadores directos. El RUT viaja solo para que el
+     servidor lo convierta en un ID con el pepper y lo descarte; nunca se guarda. */
+  const payload={...d, eqCodigo:eqCodigo(d.eq)};
+  delete payload.nombre; delete payload.telefono; delete payload.email;
+  $("status").textContent="Subiendo...";
+  try{
+    await fetch(SHEET_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
+    $("status").textContent="Enviado a la base de datos ✓";
+    toast("Enviado a la base de datos","success");
+  }catch(e){
+    $("status").textContent="No se pudo enviar (revisa la conexión).";
+    toast("Error de conexión","error");
+  }
+});
+$("btnLimpiar").addEventListener("click",()=>{if(confirm("¿Limpiar todos los campos?"))location.reload();});
+
+setModo("Ingreso");
+</script>
+</body>
+</html>

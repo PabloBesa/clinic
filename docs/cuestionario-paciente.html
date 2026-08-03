@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../shared/support.js"></script>
+<script src="../shared/clinic-identity.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0}
+  input:focus,textarea:focus{outline:none;border-color:#1568c4 !important}
+</style>
+</helmet>
+
+<div style="font-family:'Public Sans',sans-serif;background:#f7f9fc;color:#1e2530;max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:60px">
+
+  <div style="background:#1568c4;padding:26px 22px 22px;display:flex;align-items:center;gap:14px">
+    <div style="width:44px;height:44px;border-radius:50%;border:1.5px solid #cf9fd9;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+      <span style="font-family:'Newsreader',serif;font-weight:500;font-size:1.05rem;color:#fff">PB</span>
+    </div>
+    <div>
+      <div style="font-family:'Newsreader',serif;font-weight:600;font-size:1.15rem;color:#fff">Cuestionario de rodilla</div>
+      <div style="font-size:.72rem;color:#cf9fd9;font-weight:600;letter-spacing:.04em;margin-top:2px">{{ docName }} · Para responder desde casa</div>
+    </div>
+  </div>
+
+  <div style="padding:22px 18px 0">
+    <p style="font-size:.86rem;line-height:1.65;color:rgba(30,37,48,.7);margin:0 0 20px">
+      Responda este cuestionario según cómo se ha sentido su rodilla durante <b>la última semana</b>. No hay respuestas correctas o incorrectas: nos ayuda a ver su evolución.
+    </p>
+
+    <div style="background:#fff;border:1px solid #d7dee6;border-radius:10px;padding:16px 16px 18px;margin-bottom:16px">
+      <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:#7c3a86;font-weight:600;margin-bottom:12px">Datos</div>
+      <label style="display:block;margin-bottom:12px"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(30,37,48,.55);margin-bottom:6px">Nombre</span>
+        <input type="text" value="{{ nombre }}" onChange="{{ onNombre }}" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid #d7dee6;border-radius:8px;font-size:.9rem;font-family:'Public Sans',sans-serif"></label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px">
+        <label style="display:block;margin-bottom:0"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(30,37,48,.55);margin-bottom:6px">RUT</span>
+          <input type="text" value="{{ rut }}" onChange="{{ onRut }}" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid #d7dee6;border-radius:8px;font-size:.9rem;font-family:'Public Sans',sans-serif"></label>
+        <label style="display:block;margin-bottom:0"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(30,37,48,.55);margin-bottom:6px">Fecha</span>
+          <input type="text" value="{{ fecha }}" onChange="{{ onFecha }}" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid #d7dee6;border-radius:8px;font-size:.9rem;font-family:'Public Sans',sans-serif"></label>
+      </div>
+    </div>
+
+    <sc-for list="{{ items }}" as="q" hint-placeholder-count="8">
+      <div style="background:#fff;border:1px solid #d7dee6;border-radius:10px;padding:16px 16px 14px;margin-bottom:12px">
+        <div style="font-family:'Newsreader',serif;font-weight:600;font-size:.98rem;margin-bottom:10px">{{ q.text }}</div>
+        <sc-for list="{{ q.options }}" as="opt" hint-placeholder-count="5">
+          <div onClick="{{ opt.select }}" style="display:flex;gap:10px;align-items:center;padding:9px 12px;border:1px solid {{ opt.border }};background:{{ opt.bg }};border-radius:8px;margin-bottom:6px;cursor:pointer;font-size:.85rem">
+            <span style="flex:0 0 22px;height:22px;border-radius:50%;background:{{ opt.numBg }};color:{{ opt.numColor }};font-weight:700;font-size:.7rem;display:flex;align-items:center;justify-content:center">{{ opt.n }}</span>
+            <span>{{ opt.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+
+    <div style="background:#fff;border:1px solid #d7dee6;border-radius:10px;padding:16px 16px 18px;margin-bottom:16px">
+      <div style="font-family:'Newsreader',serif;font-weight:600;font-size:.98rem;margin-bottom:4px">Su rodilla en general, hoy</div>
+      <p style="font-size:.8rem;color:rgba(30,37,48,.6);margin:0 0 12px">0 significa el peor estado posible, 10 significa perfecta.</p>
+      <div style="display:flex;align-items:center;gap:12px">
+        <input type="range" min="0" max="10" value="{{ vas }}" onChange="{{ onVas }}" style="flex:1;accent-color:#1568c4">
+        <span style="font-family:'Newsreader',serif;font-weight:600;font-size:1rem;min-width:70px;text-align:right">{{ vasLabel }}</span>
+      </div>
+    </div>
+
+    <sc-if value="{{ !submitted }}" hint-placeholder-val="{{ true }}">
+      <div onClick="{{ onSubmit }}" style="background:#1568c4;color:#fff;text-align:center;padding:13px;border-radius:10px;font-weight:700;font-size:.95rem;font-family:'Newsreader',serif;cursor:pointer">Enviar respuestas</div>
+    </sc-if>
+
+    <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #d7dee6;border-radius:10px;padding:16px 16px 18px;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:#7c3a86;font-weight:600">Resumen</div>
+          <span style="font-size:.78rem;color:#1568c4;font-weight:600">{{ copiedMsg }}</span>
+        </div>
+        <textarea readonly value="{{ notaTxt }}" style="width:100%;box-sizing:border-box;min-height:220px;font-family:ui-monospace,monospace;font-size:.76rem;line-height:1.55;border:1px solid #d7dee6;border-radius:8px;padding:12px;color:#1e2530;background:#f7f9fc"></textarea>
+        <div onClick="{{ onCopiar }}" style="margin-top:10px;background:#1568c4;color:#fff;text-align:center;padding:12px;border-radius:10px;font-weight:700;font-size:.9rem;font-family:'Newsreader',serif;cursor:pointer">Copiar resumen</div>
+        <p style="font-size:.78rem;color:rgba(30,37,48,.6);margin:10px 0 0;line-height:1.6">Envíe este resumen por el canal que le indicó su médico (WhatsApp, correo o portal).</p>
+      </div>
+    </sc-if>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { nombre:"", rut:"", fecha:this.hoy(), answers:{}, vas:5, submitted:false, copiedMsg:"" };
+
+  hoy(){ const d=new Date(),p=n=>String(n).padStart(2,"0"); return `${p(d.getDate())}-${p(d.getMonth()+1)}-${d.getFullYear()}`; }
+
+  QUESTIONS = [
+    {key:"dolor", text:"Dolor de rodilla en general"},
+    {key:"escaleras", text:"Dolor al subir o bajar escaleras"},
+    {key:"caminar", text:"Dificultad para caminar distancias largas"},
+    {key:"levantarse", text:"Dificultad para levantarse de una silla"},
+    {key:"inestabilidad", text:"Sensación de inestabilidad o \"fallo\" de la rodilla"},
+    {key:"hinchazon", text:"Hinchazón de la rodilla"},
+    {key:"sueno", text:"Molestias que interrumpen el sueño"},
+    {key:"actividades", text:"Limitación en sus actividades cotidianas"},
+  ];
+  LEVELS = ["Nada","Leve","Moderado","Intenso","Muy intenso"];
+
+  renderVals() {
+    const s = this.state;
+    const items = this.QUESTIONS.map(q => ({
+      text: q.text,
+      options: this.LEVELS.map((label,i) => {
+        const on = s.answers[q.key] === i;
+        return {
+          n:i, label,
+          border: on ? "#1568c4" : "#d7dee6",
+          bg: on ? "#e6edfa" : "#fff",
+          numBg: on ? "#1568c4" : "#f3f5f8",
+          numColor: on ? "#fff" : "rgba(30,37,48,.55)",
+          select: () => this.setState(st => ({answers:{...st.answers,[q.key]:i}})),
+        };
+      }),
+    }));
+    const allAnswered = this.QUESTIONS.every(q => s.answers[q.key] !== undefined);
+    const total = this.QUESTIONS.reduce((sum,q) => sum + (s.answers[q.key] ?? 0), 0);
+    const notaTxt = this.buildNota(s, total);
+    return {
+      nombre:s.nombre, rut:s.rut, fecha:s.fecha,
+      onNombre:e=>this.setState({nombre:e.target.value}),
+      onRut:e=>this.setState({rut:e.target.value}),
+      onFecha:e=>this.setState({fecha:e.target.value}),
+      items,
+      vas:s.vas, vasLabel:`${s.vas}/10`,
+      onVas:e=>this.setState({vas:Number(e.target.value)}),
+      submitted:s.submitted,
+      onSubmit:()=>{ if(!allAnswered){ alert("Por favor responda todas las preguntas antes de enviar."); return; } this.setState({submitted:true}); },
+      notaTxt,
+      copiedMsg:s.copiedMsg,
+      onCopiar: async ()=>{ try{ await navigator.clipboard.writeText(notaTxt); }catch(e){} this.setState({copiedMsg:"Copiado ✓"}); setTimeout(()=>this.setState({copiedMsg:""}),1800); },
+      docName: CLINIC_ID.doctorName,
+    };
+  }
+
+  buildNota(s, total){
+    const L=[];
+    L.push("CUESTIONARIO DE RODILLA - Respuesta del paciente");
+    L.push(`Fecha: ${s.fecha}`);
+    L.push("========================================");
+    L.push(`Nombre: ${s.nombre || "-"}`);
+    L.push(`RUT: ${s.rut || "-"}`);
+    L.push("----------------------------------------");
+    this.QUESTIONS.forEach(q=>{
+      const i = s.answers[q.key];
+      L.push(`${q.text}: ${i!==undefined ? this.LEVELS[i] : "-"}`);
+    });
+    L.push("----------------------------------------");
+    L.push(`Puntaje total (0-32, mayor = peor): ${total}`);
+    L.push(`Salud de la rodilla hoy (EVA 0-10): ${s.vas}`);
+    L.push("========================================");
+    return L.join("\n");
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../shared/support.js"></script>
+<script src="../shared/clinic-identity.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  doc-page:not(:defined){visibility:hidden}
+  .pt-field{border:none;background:transparent;font-family:'Public Sans',sans-serif;font-style:italic;font-size:.92rem;color:rgba(30,37,48,.8);padding:2px 5px;border-radius:5px;outline:none}
+  .pt-field:hover{background:#f7f9fc}
+  .pt-field:focus{background:#e6edfa}
+  .pt-med{border:none;background:transparent;font-family:'Public Sans',sans-serif;font-weight:600;font-size:.9rem;color:#1568c4;padding:1px 4px;border-radius:5px;outline:none;min-width:160px}
+  .pt-med:hover{background:#f7f9fc}
+  .pt-med:focus{background:#e6edfa}
+  .pt-dose{border:none;background:transparent;font-family:'Public Sans',sans-serif;font-size:.9rem;color:#1e2530;padding:1px 4px;border-radius:5px;outline:none;min-width:220px}
+  .pt-dose:hover{background:#f7f9fc}
+  .pt-dose:focus{background:#e6edfa}
+</style>
+</helmet>
+<script src="../shared/doc-page.js"></script>
+<doc-page margin="20mm">
+  <div style="font-family:'Public Sans',sans-serif;color:#1e2530">
+
+    <div slot="footer" style="text-align:center;font-size:.6rem;color:rgba(30,37,48,.5);line-height:1.7;border-top:1px solid #eef1f6;padding-top:6px">
+      {{ footerLine }}
+    </div>
+
+    <div style="display:flex;align-items:center;gap:14px;margin:6px 0 8px">
+      <div style="width:52px;height:52px;border-radius:50%;border:1.5px solid #1568c4;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+        <span style="font-family:'Newsreader',serif;font-weight:500;font-size:1.3rem;color:#1568c4">PB</span>
+      </div>
+      <div>
+        <div style="font-family:'Newsreader',serif;font-weight:500;font-size:1.2rem">{{ docName }}</div>
+        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:#7c3a86;font-weight:600;margin-top:2px">{{ docSpecialty }} · {{ clinicName }}</div>
+      </div>
+    </div>
+
+    <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:#7c3a86;font-weight:600;margin:32px 0 4px">Para el paciente</div>
+    <h1 style="font-family:'Newsreader',serif;font-weight:600;font-size:1.9rem;margin:0 0 6px">Qué esperar después de su prótesis total de rodilla</h1>
+    <p style="font-style:italic;color:rgba(30,37,48,.6);font-size:.92rem;margin:0 0 8px">
+      Nombre: <input class="pt-field" style="min-width:220px" value="{{ nombre }}" onChange="{{ onNombre }}">  ·  Fecha: <input class="pt-field" style="min-width:120px" value="{{ fecha }}" onChange="{{ onFecha }}">
+    </p>
+    <p style="line-height:1.7;font-size:.98rem;color:rgba(30,37,48,.8);max-width:620px">
+      Usted fue operado(a) de una prótesis total de rodilla. En los próximos días su rodilla presentará algunos cambios que son habituales.
+    </p>
+
+    <h2 style="font-family:'Newsreader',serif;font-weight:600;font-size:1.25rem;margin:30px 0 10px;break-inside:avoid">Es normal presentar</h2>
+    <ul style="line-height:1.85;font-size:.94rem;color:#1e2530;margin:0;padding-left:20px">
+      <li>Un hematoma o machucón en el muslo y zona alrededor de la rodilla, particularmente por posterior, que irá descendiendo progresivamente hasta el tobillo.</li>
+      <li><b>Ducha:</b> la herida se puede mojar con la ducha, ya que tiene un parche especial para eso. No la cubra con plásticos extras.</li>
+      <li><b>Ejercicios:</b> debe caminar con 2 bastones y carga a tolerancia. Debe realizar los ejercicios indicados por kinesiología.</li>
+      <li><b>Curaciones:</b> no requiere de otras curaciones, salvo las que realice su doctor.</li>
+      <li><b>Pierna en alto:</b> durante el reposo, mantenga la pierna en alto con almohadas de aprox. 50 cm en el tobillo, con la rodilla extendida (no coloque cojín bajo la rodilla).</li>
+    </ul>
+
+    <h2 style="font-family:'Newsreader',serif;font-weight:600;font-size:1.25rem;margin:26px 0 10px;break-inside:avoid">Control médico</h2>
+    <p style="line-height:1.75;font-size:.94rem;color:#1e2530">
+      Dependerá de dónde sea su control habitual: preséntese mencionando "control postoperatorio" en el horario y lugar señalados en su epicrisis. Si el parche de la herida se mancha durante la semana previa al control, envíe una foto por WhatsApp a su doctor.
+    </p>
+
+    <h2 style="font-family:'Newsreader',serif;font-weight:600;font-size:1.25rem;margin:26px 0 10px;break-inside:avoid">Alimentación</h2>
+    <p style="line-height:1.75;font-size:.94rem;color:#1e2530">
+      Puede retomar su alimentación y medicamentos habituales al regresar a casa. Es habitual sentir molestias gástricas por los medicamentos para el dolor: coma liviano y sin mucho aliño.
+    </p>
+
+    <h2 style="font-family:'Newsreader',serif;font-weight:600;font-size:1.25rem;margin:26px 0 10px;break-inside:avoid">Consulte a su doctor si</h2>
+    <div style="border:1px solid #e3cbe8;background:#f3e6f5;border-radius:8px;padding:16px 20px;break-inside:avoid">
+      <ul style="line-height:1.8;font-size:.94rem;color:#1e2530;margin:0;padding-left:20px">
+        <li>Presenta fiebre de más de 38°</li>
+        <li>La herida sangra y moja el parche excesivamente</li>
+        <li>Presenta deposiciones negras o vómitos con sangre</li>
+        <li>Aumento de volumen de la rodilla</li>
+        <li>Calor local</li>
+        <li>Adormecimiento en la cara lateral de la rodilla</li>
+        <li>Dolor en la zona de los parches</li>
+      </ul>
+      <p style="font-size:.86rem;font-style:italic;color:rgba(30,37,48,.65);margin:12px 0 0">Ante cualquier duda, consulte a su médico tratante vía WhatsApp (número en epicrisis).</p>
+    </div>
+
+    <div style="break-before:page">
+      <h2 style="font-family:'Newsreader',serif;font-weight:600;font-size:1.5rem;margin:0 0 18px">Indicaciones post-operatorias</h2>
+      <ol style="line-height:2;font-size:.94rem;color:#1e2530;margin:0;padding-left:22px">
+        <sc-for list="{{ meds }}" as="m" hint-placeholder-count="12">
+          <li style="margin-bottom:4px"><input class="pt-med" value="{{ m.nombre }}" onChange="{{ m.onNombre }}"> — <input class="pt-dose" value="{{ m.dosis }}" onChange="{{ m.onDosis }}"></li>
+        </sc-for>
+      </ol>
+      <p style="font-size:.86rem;font-style:italic;color:rgba(30,37,48,.65);margin:18px 0 0">En caso de dudas, consulte a su médico tratante vía WhatsApp (número en epicrisis).</p>
+    </div>
+
+    <div style="break-before:page">
+      <h2 style="font-family:'Newsreader',serif;font-weight:600;font-size:1.5rem;margin:0 0 16px">Forma de uso de cojines en extremidades inferiores</h2>
+      <div style="width:100%;height:320px;margin-bottom:10px;border-radius:12px;border:1.5px dashed #cf9fd9;background:#f7f9fc;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box">
+        <span style="font-size:.82rem;color:rgba(30,37,48,.5);font-style:italic;max-width:320px">Diagrama pendiente: posición de la pierna con cojín bajo el tobillo — reemplazar este recuadro por una imagen fija (ver docs/assets/) antes de imprimir</span>
+      </div>
+      <p style="font-size:.86rem;color:rgba(30,37,48,.6);text-align:center;font-style:italic">Mantenga la rodilla extendida, sin cojín bajo la rodilla — el apoyo va bajo el tobillo.</p>
+    </div>
+
+  </div>
+</doc-page>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    nombre:"", fecha:this.hoy(),
+    meds: [
+      {nombre:"Celecoxib 200 mg", dosis:"1 comprimido cada 12 horas por 7 días, luego 1 al día por 7 días más"},
+      {nombre:"Paracetamol 500 mg", dosis:"2 comprimidos cada 8 horas por 21 a 30 días"},
+      {nombre:"Tramadol 100 mg/ml", dosis:"5 a 10 gotas cada 8 horas si dolor intenso; puede subir a 15-20 gotas cada 6 horas, por hasta 21 días"},
+      {nombre:"Norspan 5 mcg/h", dosis:"1 parche cada 7 días por 2 semanas"},
+      {nombre:"Xarelto 10 mg / Aspirina 100 mg", dosis:"1 comprimido al día por 10 días, luego Aspirina 1 comprimido al día por 20 días más"},
+      {nombre:"Pregabalina 75 mg", dosis:"1 comprimido en la noche (20:00 hrs) por 30 días"},
+      {nombre:"Omeprazol 20 mg", dosis:"1 comprimido al día por 15 días"},
+      {nombre:"Medias antitrombóticas", dosis:"Usar 15 días tras el alta, en ambas piernas; retirar en la noche, usar de día"},
+      {nombre:"Frío local", dosis:"2 bolsas o ice-pack cada 2 horas durante el día; suspender en la noche"},
+      {nombre:"Kinesiología", dosis:"Iniciar en casa la primera semana, luego continuar en centro kinésico"},
+      {nombre:"Control médico", dosis:"Presentarse como control postoperatorio, horario y lugar según epicrisis"},
+      {nombre:"Pierna en alto", dosis:"Almohadas de ~50 cm bajo el tobillo, rodilla en extensión, en reposo"},
+    ],
+  };
+  hoy(){ const d=new Date(),p=n=>String(n).padStart(2,"0"); return `${p(d.getDate())}-${p(d.getMonth()+1)}-${d.getFullYear()}`; }
+  renderVals() {
+    const s = this.state;
+    return {
+      nombre:s.nombre, onNombre:e=>this.setState({nombre:e.target.value}),
+      fecha:s.fecha, onFecha:e=>this.setState({fecha:e.target.value}),
+      meds: s.meds.map((m,i) => ({
+        nombre:m.nombre, dosis:m.dosis,
+        onNombre:e=>this.setState(st=>{ const meds=[...st.meds]; meds[i]={...meds[i],nombre:e.target.value}; return {meds}; }),
+        onDosis:e=>this.setState(st=>{ const meds=[...st.meds]; meds[i]={...meds[i],dosis:e.target.value}; return {meds}; }),
+      })),
+      docName: CLINIC_ID.doctorName, docSpecialty: CLINIC_ID.specialty, clinicName: CLINIC_ID.clinicName,
+      footerLine: CLINIC_ID.footerLine,
+    };
+  }
+}
+</script>
+</body>
+</html>

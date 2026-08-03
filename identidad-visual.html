@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#f7f9fc}
+  ::selection{background:#7c3a86;color:#fff}
+</style>
+</helmet>
+
+<div style="font-family:'Public Sans',sans-serif;background:#f7f9fc;color:#1e2530;min-height:100vh;padding:0 0 120px">
+
+  <!-- HEADER / LOGO -->
+  <div style="background:#1568c4;padding:72px 8vw 64px;display:flex;flex-direction:column;align-items:center;gap:28px">
+    <div style="display:flex;align-items:center;gap:20px">
+      <div style="width:64px;height:64px;border-radius:50%;border:1.5px solid #cf9fd9;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+        <span style="font-family:'Newsreader',serif;font-weight:500;font-size:1.6rem;color:#ffffff;letter-spacing:.02em">PB</span>
+      </div>
+      <div>
+        <div style="font-family:'Newsreader',serif;font-weight:500;font-size:2.1rem;color:#f7f9fc;letter-spacing:.01em;line-height:1.1">Pablo Besa Vial</div>
+        <div style="font-family:'Public Sans',sans-serif;font-size:.82rem;text-transform:uppercase;letter-spacing:.14em;color:#cf9fd9;margin-top:6px;font-weight:600">Traumatología de Rodilla</div>
+      </div>
+    </div>
+    <div style="text-align:center;max-width:520px;font-size:.86rem;line-height:1.6;color:rgba(250,248,244,.7);font-style:italic">
+      Identidad para herramientas de consulta, documentos e indicaciones para pacientes — de uso personal, fuera del sistema institucional.
+    </div>
+  </div>
+
+  <div style="max-width:980px;margin:0 auto;padding:0 8vw">
+
+    <!-- LOGO LOCKUPS -->
+    <div style="margin-top:64px">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:#7c3a86;font-weight:600;margin-bottom:6px">Marca</div>
+      <div style="font-family:'Newsreader',serif;font-size:1.5rem;font-weight:500;margin-bottom:24px">Monograma + wordmark</div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px">
+        <div style="flex:1;min-width:260px;background:#fff;border:1px solid #d7dee6;border-radius:4px;padding:36px 28px;display:flex;align-items:center;gap:16px">
+          <div style="width:52px;height:52px;border-radius:50%;border:1.5px solid #1568c4;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+            <span style="font-family:'Newsreader',serif;font-weight:500;font-size:1.3rem;color:#1568c4">PB</span>
+          </div>
+          <div>
+            <div style="font-family:'Newsreader',serif;font-weight:500;font-size:1.15rem;color:#1e2530">Pablo Besa Vial</div>
+            <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:#2f8fe0;font-weight:600;margin-top:2px">Traumatología de Rodilla</div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:260px;background:#1568c4;border-radius:4px;padding:36px 28px;display:flex;align-items:center;gap:16px">
+          <div style="width:52px;height:52px;border-radius:50%;border:1.5px solid #cf9fd9;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+            <span style="font-family:'Newsreader',serif;font-weight:500;font-size:1.3rem;color:#ffffff">PB</span>
+          </div>
+          <div>
+            <div style="font-family:'Newsreader',serif;font-weight:500;font-size:1.15rem;color:#f7f9fc">Pablo Besa Vial</div>
+            <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:#cf9fd9;font-weight:600;margin-top:2px">Traumatología de Rodilla</div>
+          </div>
+        </div>
+        <div style="width:120px;background:#f3e6f5;border-radius:4px;display:flex;align-items:center;justify-content:center">
+          <div style="width:52px;height:52px;border-radius:50%;border:1.5px solid #1568c4;display:flex;align-items:center;justify-content:center">
+            <span style="font-family:'Newsreader',serif;font-weight:500;font-size:1.3rem;color:#1568c4">PB</span>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:.8rem;line-height:1.6;color:rgba(30,37,48,.6);margin-top:14px;max-width:640px">
+        El monograma se usa solo en espacios reducidos (encabezados de app, favicon). En documentos formales siempre acompaña el wordmark completo.
+      </div>
+    </div>
+
+    <!-- COLOR PALETTE -->
+    <div style="margin-top:72px">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:#7c3a86;font-weight:600;margin-bottom:6px">Color</div>
+      <div style="font-family:'Newsreader',serif;font-size:1.5rem;font-weight:500;margin-bottom:24px">Paleta</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px">
+        <sc-for list="{{ palette }}" as="c" hint-placeholder-count="7">
+          <div style="border-radius:4px;overflow:hidden;border:1px solid #d7dee6">
+            <div style="height:88px;background:{{ c.hex }}"></div>
+            <div style="padding:10px 12px;background:#fff">
+              <div style="font-size:.82rem;font-weight:600">{{ c.name }}</div>
+              <div style="font-size:.72rem;color:rgba(30,37,48,.5);font-family:ui-monospace,monospace;margin-top:2px">{{ c.hex }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- TYPOGRAPHY -->
+    <div style="margin-top:72px">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:#7c3a86;font-weight:600;margin-bottom:6px">Tipografía</div>
+      <div style="font-family:'Newsreader',serif;font-size:1.5rem;font-weight:500;margin-bottom:24px">Newsreader + Public Sans</div>
+      <div style="background:#fff;border:1px solid #d7dee6;border-radius:4px;padding:36px 32px;display:flex;flex-direction:column;gap:22px">
+        <sc-for list="{{ specimens }}" as="s" hint-placeholder-count="5">
+          <div style="display:flex;align-items:baseline;gap:24px;border-bottom:1px solid #eef1f6;padding-bottom:18px">
+            <div style="width:150px;flex:0 0 auto;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(30,37,48,.5);font-weight:600">{{ s.label }}</div>
+            <div style="font-family:{{ s.font }};font-weight:{{ s.weight }};font-size:{{ s.size }};color:#1e2530;font-style:{{ s.style }}">{{ s.sample }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- COMPONENTS -->
+    <div style="margin-top:72px">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:#7c3a86;font-weight:600;margin-bottom:6px">Componentes</div>
+      <div style="font-family:'Newsreader',serif;font-size:1.5rem;font-weight:500;margin-bottom:24px">Elementos de interfaz</div>
+      <div style="background:#fff;border:1px solid #d7dee6;border-radius:4px;padding:32px;display:flex;flex-direction:column;gap:28px">
+
+        <div>
+          <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(30,37,48,.5);font-weight:600;margin-bottom:10px">Botones</div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div style="background:#1568c4;color:#fff;padding:11px 22px;border-radius:8px;font-weight:600;font-size:.88rem">Generar documento</div>
+            <div style="background:transparent;color:#1568c4;border:1px solid #1568c4;padding:11px 22px;border-radius:8px;font-weight:600;font-size:.88rem">Guardar borrador</div>
+            <div style="background:transparent;color:rgba(30,37,48,.55);padding:11px 22px;border-radius:8px;font-weight:400;font-size:.88rem">Cancelar</div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(30,37,48,.5);font-weight:600;margin-bottom:10px">Estado / chips</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div style="background:#e6edfa;color:#1568c4;padding:7px 14px;border-radius:20px;font-size:.82rem;font-weight:600;border:1px solid #c9d6f0">Normal</div>
+            <div style="background:#f3e6f5;color:#5c2560;padding:7px 14px;border-radius:20px;font-size:.82rem;font-weight:600;border:1px solid #e3cbe8">Requiere atención</div>
+            <div style="background:#eef1f6;color:rgba(30,37,48,.6);padding:7px 14px;border-radius:20px;font-size:.82rem;font-weight:600;border:1px solid #d7dee6">No evaluado</div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(30,37,48,.5);font-weight:600;margin-bottom:10px">Campo de texto</div>
+          <div style="max-width:320px">
+            <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.6);margin-bottom:6px">Motivo de consulta</div>
+            <div style="border:1px solid #d7dee6;border-radius:8px;padding:10px 13px;font-size:.9rem;color:rgba(30,37,48,.4);background:#fff">Gonalgia derecha, 3 meses...</div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(30,37,48,.5);font-weight:600;margin-bottom:10px">Tarjeta / sección</div>
+          <div style="max-width:380px;border:1px solid #d7dee6;border-radius:10px;padding:18px 20px;background:#f7f9fc">
+            <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:#7c3a86;font-weight:600">Diagnóstico</div>
+            <div style="font-family:'Newsreader',serif;font-weight:500;font-size:1.15rem;color:#1e2530;margin-top:2px">Lesión meniscal medial</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- APPLICATION PREVIEW -->
+    <div style="margin-top:72px">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:#7c3a86;font-weight:600;margin-bottom:6px">Aplicación</div>
+      <div style="font-family:'Newsreader',serif;font-size:1.5rem;font-weight:500;margin-bottom:8px">Próximos documentos</div>
+      <div style="font-size:.85rem;color:rgba(30,37,48,.6);margin-bottom:24px;max-width:600px">Esta misma identidad se aplicará a cada herramienta.</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px">
+        <sc-for list="{{ apps }}" as="a" hint-placeholder-count="4">
+          <div style="background:#fff;border:1px solid #d7dee6;border-radius:8px;overflow:hidden">
+            <div style="height:100px;background:#e6edfa;display:flex;align-items:center;justify-content:center">
+              <div style="width:36px;height:36px;border-radius:50%;border:1.5px solid #1568c4;display:flex;align-items:center;justify-content:center">
+                <span style="font-family:'Newsreader',serif;font-weight:500;font-size:.85rem;color:#1568c4">PB</span>
+              </div>
+            </div>
+            <div style="padding:14px 16px">
+              <div style="font-family:'Newsreader',serif;font-weight:500;font-size:1rem">{{ a.title }}</div>
+              <div style="font-size:.76rem;color:rgba(30,37,48,.55);margin-top:3px">{{ a.desc }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      palette: [
+        {name:"Tinta", hex:"#1e2530"},
+        {name:"Azul institucional", hex:"#1568c4"},
+        {name:"Azul medio", hex:"#2f8fe0"},
+        {name:"Azul pálido", hex:"#e6edfa"},
+        {name:"Púrpura acento", hex:"#7c3a86"},
+        {name:"Púrpura pálido", hex:"#f3e6f5"},
+        {name:"Papel", hex:"#f7f9fc"},
+      ],
+      specimens: [
+        {label:"Display", font:"'Newsreader',serif", weight:500, size:"2.4rem", style:"normal", sample:"Traumatología de Rodilla"},
+        {label:"Título", font:"'Newsreader',serif", weight:500, size:"1.5rem", style:"normal", sample:"Diagnóstico y plan"},
+        {label:"Cita / nota", font:"'Newsreader',serif", weight:400, size:"1.05rem", style:"italic", sample:"Evolución favorable desde el último control."},
+        {label:"Cuerpo", font:"'Public Sans',sans-serif", weight:400, size:".92rem", style:"normal", sample:"Paciente refiere dolor medial de rodilla derecha, de 3 meses de evolución."},
+        {label:"Etiqueta", font:"'Public Sans',sans-serif", weight:600, size:".72rem", style:"normal", sample:"MOTIVO DE CONSULTA"},
+      ],
+      apps: [
+        {title:"Indicaciones al alta", desc:"Documento post-consulta para el paciente"},
+        {title:"Cuestionario en casa", desc:"Escalas y encuestas que el paciente responde"},
+        {title:"Órdenes médicas", desc:"Kinesiología, exámenes, imágenes"},
+        {title:"Certificado", desc:"Certificado médico simple"},
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../shared/support.js"></script>
+<script src="../shared/clinic-identity.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  doc-page:not(:defined){visibility:hidden}
+  .cm-field{border:none;background:transparent;font-family:'Public Sans',sans-serif;font-size:.98rem;color:#1e2530;padding:2px 5px;border-radius:5px;outline:none}
+  .cm-field:hover{background:#f7f9fc}
+  .cm-field:focus{background:#e6edfa}
+</style>
+</helmet>
+<script src="../shared/doc-page.js"></script>
+
+<doc-page size="a4">
+  <section class="page" style="font-family:'Public Sans',sans-serif;color:#1e2530;padding:22mm 22mm;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:2px solid #1568c4;margin-bottom:48px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:46px;height:46px;border-radius:50%;border:1.5px solid #1568c4;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+          <span style="font-family:'Newsreader',serif;font-weight:500;font-size:1.05rem;color:#1568c4">PB</span>
+        </div>
+        <div>
+          <div style="font-family:'Newsreader',serif;font-weight:500;font-size:1.15rem;line-height:1.15">{{ docName }}</div>
+          <div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;color:#7c3a86;font-weight:600;margin-top:2px">{{ docSpecialty }}</div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:.7rem;color:rgba(30,37,48,.55);line-height:1.6">
+        {{ clinicName }}
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-bottom:44px">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.16em;color:#7c3a86;font-weight:600;margin-bottom:6px">Certificado</div>
+      <div style="font-family:'Newsreader',serif;font-weight:600;font-size:1.9rem">Certificado Médico</div>
+    </div>
+
+    <div style="font-size:.98rem;line-height:2.3;color:#1e2530">
+      Certifico que el(la) paciente <input class="cm-field" style="min-width:260px" value="{{ nombre }}" onChange="{{ onNombre }}">,
+      RUT <input class="cm-field" style="min-width:130px" value="{{ rut }}" onChange="{{ onRut }}">,
+      fue atendido(a) en consulta con fecha <input class="cm-field" style="min-width:130px" value="{{ fechaAtencion }}" onChange="{{ onFechaAtencion }}">,
+      presentando el siguiente diagnóstico:
+      <input class="cm-field" style="min-width:100%;display:block;margin-top:8px" value="{{ diagnostico }}" onChange="{{ onDiagnostico }}">
+      <br><br>
+      Por lo anterior, se indica reposo / licencia médica por un período de
+      <input class="cm-field" style="min-width:50px;text-align:center" value="{{ dias }}" onChange="{{ onDias }}"> días,
+      a partir del <input class="cm-field" style="min-width:130px" value="{{ fechaInicio }}" onChange="{{ onFechaInicio }}">.
+    </div>
+
+    <div style="margin-top:40px;font-size:.9rem;font-style:italic;color:rgba(30,37,48,.7);line-height:1.7">
+      Se extiende el presente certificado a petición del interesado, para los fines que estime pertinentes.
+    </div>
+
+    <div style="position:absolute;bottom:34mm;left:22mm;right:22mm;display:flex;justify-content:space-between;align-items:flex-end">
+      <div style="font-size:.82rem;color:rgba(30,37,48,.6)">Santiago, <input class="cm-field" style="min-width:170px;font-size:.82rem" value="{{ fecha }}" onChange="{{ onFecha }}"></div>
+      <div style="text-align:center">
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-weight:500;font-size:1.15rem;color:#1e2530;border-bottom:1px solid #1e2530;padding:0 4px 4px;min-width:220px">{{ docSignature }}</div>
+        <div style="font-size:.7rem;color:rgba(30,37,48,.55);margin-top:6px">RUT {{ docRut }} · Firma electrónica · {{ fecha }}</div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:22mm;left:22mm;right:22mm;text-align:center;font-size:.6rem;color:rgba(30,37,48,.45);line-height:1.7;border-top:1px solid #eef1f6;padding-top:8px">
+      {{ footerLine }}
+    </div>
+  </section>
+</doc-page>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { nombre:"", rut:"", fechaAtencion:"", diagnostico:"", dias:"", fechaInicio:"", fecha:this.hoy() };
+  hoy(){ const d=new Date(),p=n=>String(n).padStart(2,"0"); return `${p(d.getDate())}-${p(d.getMonth()+1)}-${d.getFullYear()}`; }
+  renderVals() {
+    const s = this.state;
+    return {
+      ...s,
+      onNombre:e=>this.setState({nombre:e.target.value}),
+      onRut:e=>this.setState({rut:e.target.value}),
+      onFechaAtencion:e=>this.setState({fechaAtencion:e.target.value}),
+      onDiagnostico:e=>this.setState({diagnostico:e.target.value}),
+      onDias:e=>this.setState({dias:e.target.value}),
+      onFechaInicio:e=>this.setState({fechaInicio:e.target.value}),
+      onFecha:e=>this.setState({fecha:e.target.value}),
+      docName: CLINIC_ID.doctorName, docSpecialty: CLINIC_ID.specialty, clinicName: CLINIC_ID.clinicName,
+      docSignature: CLINIC_ID.doctorSignature, docRut: CLINIC_ID.doctorRut, footerLine: CLINIC_ID.footerLine,
+    };
+  }
+}
+</script>
+</body>
+</html>

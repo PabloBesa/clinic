@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../shared/support.js"></script>
+<script src="../shared/clinic-identity.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  doc-page:not(:defined){visibility:hidden}
+  .ip-field{border:none;background:transparent;font-family:'Public Sans',sans-serif;font-style:italic;font-size:.92rem;color:rgba(30,37,48,.8);padding:2px 5px;border-radius:5px;outline:none}
+  .ip-field:hover{background:#f7f9fc}
+  .ip-field:focus{background:#e6edfa}
+</style>
+</helmet>
+<script src="../shared/doc-page.js"></script>
+
+<doc-page margin="20mm">
+  <div style="font-family:'Public Sans',sans-serif;color:#1e2530">
+
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:8px">
+      <div style="width:52px;height:52px;border-radius:50%;border:1.5px solid #1568c4;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+        <span style="font-family:'Newsreader',serif;font-weight:500;font-size:1.3rem;color:#1568c4">PB</span>
+      </div>
+      <div>
+        <div style="font-family:'Newsreader',serif;font-weight:500;font-size:1.2rem">{{ docName }}</div>
+        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:#7c3a86;font-weight:600;margin-top:2px">{{ docSpecialty }} · {{ clinicName }}</div>
+      </div>
+    </div>
+
+    <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:#7c3a86;font-weight:600;margin:32px 0 4px">Para el paciente</div>
+    <h1 style="font-family:'Newsreader',serif;font-weight:600;font-size:2rem;margin:0 0 6px">Indicaciones para su recuperación</h1>
+    <p style="font-style:italic;color:rgba(30,37,48,.6);font-size:.92rem;margin:0 0 8px">
+      Nombre: <input class="ip-field" style="min-width:220px" value="{{ nombre }}" onChange="{{ onNombre }}">  ·  Fecha: <input class="ip-field" style="min-width:120px" value="{{ fecha }}" onChange="{{ onFecha }}">
+    </p>
+    <p style="line-height:1.7;font-size:.98rem;color:rgba(30,37,48,.8);max-width:600px">
+      Estas son las indicaciones para los próximos días. Léalas con calma; si tiene dudas, no dude en contactarnos antes de su próximo control.
+    </p>
+
+    <h2 style="font-family:'Newsreader',serif;font-weight:600;font-size:1.3rem;margin:36px 0 10px;break-inside:avoid">Qué esperar en los próximos días</h2>
+    <p style="line-height:1.75;font-size:.94rem;color:#1e2530">
+      Es normal sentir molestias, hinchazón leve o rigidez en la rodilla durante la primera semana. Estos síntomas deberían ir disminuyendo de forma progresiva. Mantenga la pierna elevada por ratos durante el día y aplique hielo local (20 minutos, cada 4 a 6 horas) para ayudar con la inflamación.
+    </p>
+
+    <h2 style="font-family:'Newsreader',serif;font-weight:600;font-size:1.3rem;margin:28px 0 10px;break-inside:avoid">Manejo del dolor</h2>
+    <p style="line-height:1.75;font-size:.94rem;color:#1e2530">
+      Use los medicamentos indicados según la receta entregada, respetando los horarios señalados. No es necesario esperar a que el dolor sea intenso para tomarlos: mantenerlos a horario ayuda a controlarlo mejor.
+    </p>
+
+    <h2 style="font-family:'Newsreader',serif;font-weight:600;font-size:1.3rem;margin:28px 0 10px;break-inside:avoid">Movilidad y actividad</h2>
+    <p style="line-height:1.75;font-size:.94rem;color:#1e2530">
+      Camine con apoyo si así se le indicó, evitando cargar peso completo sobre la rodilla hasta su próximo control. Evite actividades de impacto, deportes o subir escaleras de forma repetida mientras se recupera.
+    </p>
+
+    <h2 style="font-family:'Newsreader',serif;font-weight:600;font-size:1.3rem;margin:28px 0 10px;break-inside:avoid">Cuándo consultar de urgencia</h2>
+    <div style="border:1px solid #e3cbe8;background:#f3e6f5;border-radius:8px;padding:16px 20px;break-inside:avoid">
+      <p style="line-height:1.75;font-size:.94rem;color:#1e2530;margin:0">
+        Acuda a un servicio de urgencia si presenta: fiebre, aumento súbito e importante del dolor, enrojecimiento o calor intenso en la rodilla, secreción por la herida, o si nota la pierna muy hinchada, pálida o fría.
+      </p>
+    </div>
+
+    <h2 style="font-family:'Newsreader',serif;font-weight:600;font-size:1.3rem;margin:28px 0 10px;break-inside:avoid">Próximo control</h2>
+    <p style="line-height:1.75;font-size:.94rem;color:#1e2530">
+      Su próximo control está programado para: <input class="ip-field" style="min-width:200px" value="{{ proximoControl }}" onChange="{{ onProximoControl }}">
+    </p>
+
+    <div style="margin-top:44px;padding-top:16px;border-top:1px solid #d7dee6;font-size:.8rem;color:rgba(30,37,48,.55);line-height:1.7">
+      Ante cualquier duda, contáctenos a través del canal habitual de la consulta.<br>{{ docName }} · {{ docSpecialty }}
+    </div>
+
+    <div slot="footer" style="text-align:center;font-size:.62rem;color:rgba(30,37,48,.5);line-height:1.7;border-top:1px solid #eef1f6;padding-top:6px">
+      {{ footerLine }}
+    </div>
+  </div>
+</doc-page>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { nombre:"", fecha:this.hoy(), proximoControl:"" };
+  hoy(){ const d=new Date(),p=n=>String(n).padStart(2,"0"); return `${p(d.getDate())}-${p(d.getMonth()+1)}-${d.getFullYear()}`; }
+  renderVals() {
+    const s = this.state;
+    return {
+      ...s,
+      onNombre:e=>this.setState({nombre:e.target.value}),
+      onFecha:e=>this.setState({fecha:e.target.value}),
+      onProximoControl:e=>this.setState({proximoControl:e.target.value}),
+      docName: CLINIC_ID.doctorName, docSpecialty: CLINIC_ID.specialty, clinicName: CLINIC_ID.clinicName,
+      footerLine: CLINIC_ID.footerLine,
+    };
+  }
+}
+</script>
+</body>
+</html>

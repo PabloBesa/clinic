@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../shared/support.js"></script>
+<script src="../shared/clinic-identity.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  doc-page:not(:defined){visibility:hidden}
+  .om-field{border:none;background:transparent;font-family:'Public Sans',sans-serif;font-size:.92rem;color:#1e2530;width:100%;padding:3px 5px;border-radius:5px;outline:none}
+  .om-field:hover{background:#f7f9fc}
+  .om-field:focus{background:#e6edfa}
+  .om-box{border:none;border:1px solid #d7dee6;border-radius:6px;font-family:'Public Sans',sans-serif;font-size:.86rem;color:#1e2530;width:100%;box-sizing:border-box;padding:10px 12px;outline:none;resize:none}
+  .om-box:focus{border-color:#1568c4}
+</style>
+</helmet>
+<script src="../shared/doc-page.js"></script>
+
+<doc-page size="a4">
+
+  <section class="page" style="font-family:'Public Sans',sans-serif;color:#1e2530;padding:20mm 18mm;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:2px solid #1568c4;margin-bottom:26px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:42px;height:42px;border-radius:50%;border:1.5px solid #1568c4;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+          <span style="font-family:'Newsreader',serif;font-weight:500;font-size:1rem;color:#1568c4">PB</span>
+        </div>
+        <div>
+          <div style="font-family:'Newsreader',serif;font-weight:500;font-size:1.1rem;line-height:1.15">{{ docName }}</div>
+          <div style="font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:#7c3a86;font-weight:600;margin-top:2px">{{ docSpecialty }}</div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:.7rem;color:rgba(30,37,48,.55);line-height:1.6">
+        {{ clinicName }}
+      </div>
+    </div>
+
+    <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;color:#7c3a86;font-weight:600;margin-bottom:4px">Orden médica</div>
+    <div style="font-family:'Newsreader',serif;font-weight:600;font-size:1.6rem;margin-bottom:24px">Kinesiología</div>
+
+    <div style="display:flex;gap:24px;margin-bottom:22px">
+      <div style="flex:2"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">Nombre paciente</div><input class="om-field" value="{{ nombre }}" onChange="{{ onNombre }}"></div>
+      <div style="flex:1"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">RUT</div><input class="om-field" value="{{ rut }}" onChange="{{ onRut }}"></div>
+      <div style="flex:1"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">Fecha</div><input class="om-field" value="{{ fecha }}" onChange="{{ onFecha }}"></div>
+    </div>
+    <div style="margin-bottom:26px"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">Diagnóstico</div><input class="om-field" value="{{ diagnostico }}" onChange="{{ onDiagnostico }}"></div>
+
+    <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(30,37,48,.55);font-weight:600;margin-bottom:12px">Se indica tratamiento kinésico orientado a:</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-bottom:26px">
+      <sc-for list="{{ kinesioItems }}" as="it" hint-placeholder-count="6">
+        <div onClick="{{ it.toggle }}" style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <span style="width:14px;height:14px;border:1.3px solid #1568c4;border-radius:3px;flex:0 0 auto;background:{{ it.boxBg }};color:#fff;font-size:.62rem;line-height:14px;text-align:center">{{ it.mark }}</span>
+          <span style="font-size:.86rem">{{ it.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;gap:24px;margin-bottom:26px">
+      <div style="flex:1"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">N° de sesiones</div><input class="om-field" value="{{ sesiones }}" onChange="{{ onSesiones }}"></div>
+      <div style="flex:1"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">Frecuencia</div><input class="om-field" value="{{ frecuencia }}" onChange="{{ onFrecuencia }}"></div>
+      <div style="flex:1"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">Zona a tratar</div><input class="om-field" value="{{ zona }}" onChange="{{ onZona }}"></div>
+    </div>
+    <div style="margin-bottom:36px">
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:8px">Indicaciones adicionales</div>
+      <textarea class="om-box" style="height:64px" value="{{ kinesioIndicaciones }}" onChange="{{ onKinesioIndicaciones }}"></textarea>
+    </div>
+
+    <div style="position:absolute;bottom:20mm;left:18mm;right:18mm;display:flex;justify-content:space-between;align-items:flex-end">
+      <div style="font-size:.6rem;color:rgba(30,37,48,.5);line-height:1.7;max-width:300px">
+        UC CHRISTUS · {{ web }}<br>
+        {{ addr1 }}<br>
+        {{ addr2 }}<br>
+        Reserva de horas: {{ phone }} · {{ email }}
+      </div>
+      <div style="text-align:center">
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-weight:500;font-size:1.15rem;color:#1e2530;border-bottom:1px solid #1e2530;padding:0 4px 4px;min-width:200px">{{ docSignature }}</div>
+        <div style="font-size:.68rem;color:rgba(30,37,48,.55);margin-top:6px">RUT {{ docRut }} · Firma electrónica · {{ fecha }}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" style="font-family:'Public Sans',sans-serif;color:#1e2530;padding:20mm 18mm;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:2px solid #1568c4;margin-bottom:26px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:42px;height:42px;border-radius:50%;border:1.5px solid #1568c4;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+          <span style="font-family:'Newsreader',serif;font-weight:500;font-size:1rem;color:#1568c4">PB</span>
+        </div>
+        <div>
+          <div style="font-family:'Newsreader',serif;font-weight:500;font-size:1.1rem;line-height:1.15">{{ docName }}</div>
+          <div style="font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:#7c3a86;font-weight:600;margin-top:2px">{{ docSpecialty }}</div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:.7rem;color:rgba(30,37,48,.55);line-height:1.6">
+        {{ clinicName }}
+      </div>
+    </div>
+
+    <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;color:#7c3a86;font-weight:600;margin-bottom:4px">Orden médica</div>
+    <div style="font-family:'Newsreader',serif;font-weight:600;font-size:1.6rem;margin-bottom:24px">Exámenes de laboratorio</div>
+
+    <div style="display:flex;gap:24px;margin-bottom:22px">
+      <div style="flex:2"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">Nombre paciente</div><input class="om-field" value="{{ nombre }}" onChange="{{ onNombre }}"></div>
+      <div style="flex:1"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">RUT</div><input class="om-field" value="{{ rut }}" onChange="{{ onRut }}"></div>
+      <div style="flex:1"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">Fecha</div><input class="om-field" value="{{ fecha }}" onChange="{{ onFecha }}"></div>
+    </div>
+    <div style="margin-bottom:26px"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">Indicación clínica / diagnóstico</div><input class="om-field" value="{{ diagnostico }}" onChange="{{ onDiagnostico }}"></div>
+
+    <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(30,37,48,.55);font-weight:600;margin-bottom:12px">Se solicita:</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-bottom:26px">
+      <sc-for list="{{ examItems }}" as="it" hint-placeholder-count="8">
+        <div onClick="{{ it.toggle }}" style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <span style="width:14px;height:14px;border:1.3px solid #1568c4;border-radius:3px;flex:0 0 auto;background:{{ it.boxBg }};color:#fff;font-size:.62rem;line-height:14px;text-align:center">{{ it.mark }}</span>
+          <span style="font-size:.86rem">{{ it.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-bottom:36px">
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:8px">Otros exámenes</div>
+      <textarea class="om-box" style="height:64px" value="{{ otrosExamenes }}" onChange="{{ onOtrosExamenes }}"></textarea>
+    </div>
+
+    <div style="position:absolute;bottom:20mm;left:18mm;right:18mm;display:flex;justify-content:space-between;align-items:flex-end">
+      <div style="font-size:.6rem;color:rgba(30,37,48,.5);line-height:1.7;max-width:300px">
+        UC CHRISTUS · {{ web }}<br>
+        {{ addr1 }}<br>
+        {{ addr2 }}<br>
+        Reserva de horas: {{ phone }} · {{ email }}
+      </div>
+      <div style="text-align:center">
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-weight:500;font-size:1.15rem;color:#1e2530;border-bottom:1px solid #1e2530;padding:0 4px 4px;min-width:200px">{{ docSignature }}</div>
+        <div style="font-size:.68rem;color:rgba(30,37,48,.55);margin-top:6px">RUT {{ docRut }} · Firma electrónica · {{ fecha }}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" style="font-family:'Public Sans',sans-serif;color:#1e2530;padding:20mm 18mm;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:2px solid #1568c4;margin-bottom:26px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:42px;height:42px;border-radius:50%;border:1.5px solid #1568c4;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+          <span style="font-family:'Newsreader',serif;font-weight:500;font-size:1rem;color:#1568c4">PB</span>
+        </div>
+        <div>
+          <div style="font-family:'Newsreader',serif;font-weight:500;font-size:1.1rem;line-height:1.15">{{ docName }}</div>
+          <div style="font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:#7c3a86;font-weight:600;margin-top:2px">{{ docSpecialty }}</div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:.7rem;color:rgba(30,37,48,.55);line-height:1.6">
+        {{ clinicName }}
+      </div>
+    </div>
+
+    <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;color:#7c3a86;font-weight:600;margin-bottom:4px">Orden médica</div>
+    <div style="font-family:'Newsreader',serif;font-weight:600;font-size:1.6rem;margin-bottom:24px">Imágenes</div>
+
+    <div style="display:flex;gap:24px;margin-bottom:22px">
+      <div style="flex:2"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">Nombre paciente</div><input class="om-field" value="{{ nombre }}" onChange="{{ onNombre }}"></div>
+      <div style="flex:1"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">RUT</div><input class="om-field" value="{{ rut }}" onChange="{{ onRut }}"></div>
+      <div style="flex:1"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">Fecha</div><input class="om-field" value="{{ fecha }}" onChange="{{ onFecha }}"></div>
+    </div>
+
+    <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(30,37,48,.55);font-weight:600;margin-bottom:12px">Lateralidad</div>
+    <div style="display:flex;gap:10px;margin-bottom:22px">
+      <sc-for list="{{ ladoItems }}" as="it" hint-placeholder-count="3">
+        <div onClick="{{ it.select }}" style="padding:7px 16px;border-radius:20px;border:1px solid {{ it.border }};background:{{ it.bg }};font-size:.82rem;color:{{ it.color }};cursor:pointer;font-weight:{{ it.weight }}">{{ it.label }}</div>
+      </sc-for>
+    </div>
+
+    <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(30,37,48,.55);font-weight:600;margin-bottom:12px">Se solicita:</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-bottom:26px">
+      <sc-for list="{{ imagingItems }}" as="it" hint-placeholder-count="5">
+        <div onClick="{{ it.toggle }}" style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <span style="width:14px;height:14px;border:1.3px solid #1568c4;border-radius:3px;flex:0 0 auto;background:{{ it.boxBg }};color:#fff;font-size:.62rem;line-height:14px;text-align:center">{{ it.mark }}</span>
+          <span style="font-size:.86rem">{{ it.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-bottom:26px"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(30,37,48,.5);margin-bottom:6px">Indicación clínica</div><input class="om-field" value="{{ indicacionImagen }}" onChange="{{ onIndicacionImagen }}"></div>
+
+    <div style="position:absolute;bottom:20mm;left:18mm;right:18mm;display:flex;justify-content:space-between;align-items:flex-end">
+      <div style="font-size:.6rem;color:rgba(30,37,48,.5);line-height:1.7;max-width:300px">
+        UC CHRISTUS · {{ web }}<br>
+        {{ addr1 }}<br>
+        {{ addr2 }}<br>
+        Reserva de horas: {{ phone }} · {{ email }}
+      </div>
+      <div style="text-align:center">
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-weight:500;font-size:1.15rem;color:#1e2530;border-bottom:1px solid #1e2530;padding:0 4px 4px;min-width:200px">{{ docSignature }}</div>
+        <div style="font-size:.68rem;color:rgba(30,37,48,.55);margin-top:6px">RUT {{ docRut }} · Firma electrónica · {{ fecha }}</div>
+      </div>
+    </div>
+  </section>
+
+</doc-page>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    nombre:"", rut:"", fecha:this.hoy(), diagnostico:"",
+    sesiones:"", frecuencia:"", zona:"", kinesioIndicaciones:"",
+    otrosExamenes:"", indicacionImagen:"", lado:null,
+    kChecked:{}, eChecked:{}, iChecked:{},
+  };
+  hoy(){ const d=new Date(),p=n=>String(n).padStart(2,"0"); return `${p(d.getDate())}-${p(d.getMonth()+1)}-${d.getFullYear()}`; }
+
+  KINESIO = ["Terapia manual","Fortalecimiento muscular","Movilidad articular","Reeducación propioceptiva","Hidroterapia","Electroanalgesia"];
+  EXAMS = ["Hemograma","VHS","PCR","Perfil bioquímico","Ácido úrico","Función renal","Factor reumatoide","Vitamina D"];
+  IMAGING = ["Radiografía de rodilla AP/Lateral","Resonancia magnética de rodilla","Ecografía de partes blandas","TAC de rodilla","Densitometría ósea"];
+  LADOS = ["Derecha","Izquierda","Bilateral"];
+
+  toggleItem(mapKey, label){
+    this.setState(s => ({ [mapKey]: { ...s[mapKey], [label]: !s[mapKey][label] } }));
+  }
+  mapItems(list, mapKey){
+    const s = this.state;
+    return list.map(label => {
+      const on = !!s[mapKey][label];
+      return { label, mark: on ? "✓" : "", boxBg: on ? "#1568c4" : "#fff", toggle: () => this.toggleItem(mapKey, label) };
+    });
+  }
+
+  renderVals() {
+    const s = this.state;
+    return {
+      nombre:s.nombre, rut:s.rut, fecha:s.fecha, diagnostico:s.diagnostico,
+      onNombre:e=>this.setState({nombre:e.target.value}),
+      onRut:e=>this.setState({rut:e.target.value}),
+      onFecha:e=>this.setState({fecha:e.target.value}),
+      onDiagnostico:e=>this.setState({diagnostico:e.target.value}),
+      kinesioItems: this.mapItems(this.KINESIO, "kChecked"),
+      sesiones:s.sesiones, onSesiones:e=>this.setState({sesiones:e.target.value}),
+      frecuencia:s.frecuencia, onFrecuencia:e=>this.setState({frecuencia:e.target.value}),
+      zona:s.zona, onZona:e=>this.setState({zona:e.target.value}),
+      kinesioIndicaciones:s.kinesioIndicaciones, onKinesioIndicaciones:e=>this.setState({kinesioIndicaciones:e.target.value}),
+      examItems: this.mapItems(this.EXAMS, "eChecked"),
+      otrosExamenes:s.otrosExamenes, onOtrosExamenes:e=>this.setState({otrosExamenes:e.target.value}),
+      ladoItems: this.LADOS.map(l => { const on = s.lado===l; return { label:l, border: on?"#1568c4":"#d7dee6", bg: on?"#e6edfa":"#fff", color: on?"#1568c4":"rgba(30,37,48,.65)", weight: on?600:400, select:()=>this.setState({lado:l}) }; }),
+      imagingItems: this.mapItems(this.IMAGING, "iChecked"),
+      indicacionImagen:s.indicacionImagen, onIndicacionImagen:e=>this.setState({indicacionImagen:e.target.value}),
+      docName: CLINIC_ID.doctorName, docSpecialty: CLINIC_ID.specialty, clinicName: CLINIC_ID.clinicName,
+      docSignature: CLINIC_ID.doctorSignature, docRut: CLINIC_ID.doctorRut,
+      web: CLINIC_ID.web, addr1: CLINIC_ID.addr1, addr2: CLINIC_ID.addr2, phone: CLINIC_ID.phone, email: CLINIC_ID.email,
+    };
+  }
+}
+</script>
+</body>
+</html>
